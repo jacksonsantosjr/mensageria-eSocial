@@ -1,0 +1,61 @@
+# ============================================
+# eSocial Mensageria — .gitignore
+# ============================================
+
+# --- Segredos e Certificados ---
+.env
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+/certs/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Node.js / Frontend ---
+node_modules/
+frontend/dist/
+frontend/build/
+.next/
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Testes ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Arquivos temporários do projeto ---
+doc_output.txt
+extract_doc.py
+
+# --- Schemas XSD (baixados automaticamente) ---
+# Os schemas são re-baixados automaticamente, não precisam estar no repo
+backend/xsd/*.xsd
