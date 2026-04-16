@@ -11,8 +11,8 @@ export function Dashboard() {
     refetchInterval: 10000 // Atualiza a cada 10s
   });
 
-  const metrics = data?.metrics || { total: 0, pending: 0, processed: 0, errors: 0 };
-  const recentLotes = data?.recent_lotes || [];
+  const metrics = (data as any)?.metrics || { total: 0, pending: 0, processed: 0, errors: 0 };
+  const recentLotes = (data as any)?.recent_lotes || [];
 
   const cards = [
     { title: 'Lotes Enviados', value: metrics.total, icon: Database, color: 'text-blue-400', bg: 'bg-blue-500/10' },

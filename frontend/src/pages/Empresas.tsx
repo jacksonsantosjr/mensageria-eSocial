@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getEmpresas, createEmpresa, updateEmpresa, getCNPJData, uploadLogo } from '../services/api';
-import { Plus, Loader2, Building2, ShieldCheck, X, Image as ImageIcon, Camera } from 'lucide-react';
+import { Plus, Loader2, Building2, ShieldCheck, X, Camera } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 
 export default function Empresas() {

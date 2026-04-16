@@ -105,6 +105,16 @@ export const downloadEventoPDF = async (id: string, fileName?: string) => {
     link.remove();
 };
 
+export const getDashboardResumo = async () => {
+    const response = await api.get('/dashboard/resumo');
+    return response.data;
+};
+
+export const getDashboardResumo = async () => {
+    const response = await api.get('/dashboard/resumo');
+    return response.data;
+};
+
 // --- Configurações ---
 export const getSystemConfig = async () => {
     const response = await api.get('/config');
