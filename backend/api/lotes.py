@@ -30,52 +30,56 @@ async def upload_lote(
 ):
     """
     Upload de XML de lote de eventos do eSocial.
-    O arquivo é salvo no Supabase Storage e os metadados no Postgres.
     """
-    # 1. Validações Iniciais
-    if not file.filename or not file.filename.endswith(".xml"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos .xml são aceitos.")
-    
-    empresa = session.get(Empresa, empresa_id)
-    if not empresa:
-        raise HTTPException(status_code=404, detail="Empresa não cadastrada.")
-
-    # 2. Leitura e Persistência de Arquivo (Storage)
-    content = await file.read()
-    lote_id = uuid.uuid4()
-    storage_path = f"lotes/{empresa_id}/{lote_id}_original.xml"
-    
     try:
-        xml_url = await storage_service.upload_file(storage_path, content)
+        # 1. Validações Iniciais
+        if not file.filename or not file.filename.endswith(".xml"):
+            raise HTTPException(status_code=400, detail="Apenas arquivos .xml são aceitos.")
+        
+        empresa = session.get(Empresa, empresa_id)
+        if not empresa:
+            raise HTTPException(status_code=404, detail="Empresa não cadastrada.")
+
+        # 2. Leitura e Persistência de Arquivo (Storage)
+        content = await file.read()
+        lote_id = uuid.uuid4()
+        storage_path = f"lotes/{empresa_id}/{lote_id}_original.xml"
+        
+        try:
+            xml_url = await storage_service.upload_file(storage_path, content)
+        except Exception as e:
+            logger.error("Falha ao salvar no Storage: %s", str(e))
+            raise HTTPException(status_code=500, detail=f"Erro no Storage: {str(e)}")
+
+        # 3. Criação do Registro no Banco (Metadados)
+        db_lote = Lote(
+            id=lote_id,
+            empresa_id=empresa_id,
+            xml_original=xml_url,
+            status=LoteStatus.VALIDATING,
+            ambiente=ambiente,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+
+        session.add(db_lote)
+        session.commit()
+        session.refresh(db_lote)
+
+        # 4. Processamento Assíncrono
+        background_tasks.add_task(
+            processor.process_lote_upload, 
+            content.decode('utf-8', errors='ignore'), 
+            db_lote, 
+            session
+        )
+        
+        return db_lote
     except Exception as e:
-        logger.error("Falha ao salvar no Storage: %s", str(e))
-        raise HTTPException(status_code=500, detail="Erro ao persistir arquivo no servidor.")
-
-    # 3. Criação do Registro no Banco (Metadados)
-    db_lote = Lote(
-        id=lote_id,
-        empresa_id=empresa_id,
-        xml_original=xml_url,
-        status=LoteStatus.VALIDATING,
-        ambiente=ambiente,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
-    )
-
-    session.add(db_lote)
-    session.commit()
-    session.refresh(db_lote)
-
-    # 4. Processamento Assíncrono (Extração e Assinatura Híbrida)
-    # Usamos BackgroundTasks para não bloquear a resposta da API e evitar timeouts
-    background_tasks.add_task(
-        processor.process_lote_upload, 
-        content.decode('utf-8', errors='ignore'), 
-        db_lote, 
-        session
-    )
-    
-    return db_lote
+        logger.error("Erro crítico no upload: %s", str(e))
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=f"Erro interno no processamento: {str(e)}")
 
 @router.get("/lotes", response_model=list[LoteResponse])
 async def listar_lotes(
