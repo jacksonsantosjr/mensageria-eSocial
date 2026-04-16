@@ -83,11 +83,11 @@ class PDFService:
         
         # Posicionamento pós-cabeçalho
         if has_logo:
-            # Garante que o documento desça as coordenadas Y para ultrapassar a altura da imagem caso ela seja grande
-            new_y = max(pdf.get_y(), 34)
+            # Desce o cursor gerando respiro entre o cabeçalho corporativo e o título do documento
+            new_y = max(pdf.get_y() + 15, 45)
             pdf.set_y(new_y)
         else:
-            pdf.ln(10)
+            pdf.ln(15)
         
         # Título do Documento
         pdf.set_font("helvetica", "B", 14)
