@@ -25,10 +25,33 @@ def init_db():
         # 1. Criar tabelas base
         SQLModel.metadata.create_all(engine)
         
-        # 2. Migração de emergência: Adicionar logo_path se não existir
-        # Usamos SQL puro para garantir compatibilidade com tabelas existentes
+        # 2. Migração de emergência: Sincronização de Schemas
         with engine.connect() as conn:
+            # Tabela Empresas
             conn.execute(text("ALTER TABLE empresas ADD COLUMN IF NOT EXISTS logo_path TEXT;"))
+            
+            # Tabela Lotes
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS xml_original TEXT;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS xml_assinado TEXT;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS total_eventos INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS eventos_sucesso INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS eventos_erro INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS erro_geral TEXT;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS tentativas_consulta INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE lotes ADD COLUMN IF NOT EXISTS proxima_consulta TIMESTAMP;"))
+            
+            # Tabela Eventos
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS evento_id_esocial TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS tipo TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS xml_original TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS xml_assinado TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS status TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS nr_recibo TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS cd_resposta TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS desc_resposta TEXT;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS ocorrencias_json JSONB;"))
+            conn.execute(text("ALTER TABLE eventos ADD COLUMN IF NOT EXISTS validation_errors JSONB;"))
+            
             conn.commit()
             
         logger.info("Banco de dados sincronizado e migrado com sucesso.")
