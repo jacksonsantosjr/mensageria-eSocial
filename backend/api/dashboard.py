@@ -46,5 +46,5 @@ async def get_dashboard_resumo(session: Session = Depends(get_session)):
             "processed": processados,
             "errors": erros
         },
-        "recent_lotes": recent_lotes
+        "recent_lotes": [LoteResponse.model_validate(l) for l in recent_lotes]
     }
