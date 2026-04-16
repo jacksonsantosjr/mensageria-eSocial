@@ -50,6 +50,19 @@ class Settings(BaseSettings):
         """Verifica se o ambiente é produção."""
         return self.environment.lower() == "production"
 
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        """
+        Retorna a URL de banco adaptada para SQLAlchemy/psycopg2.
+        Remove o parametro pgbouncer=true que causa erro no driver python.
+        """
+        url = self.database_url
+        if "pgbouncer=true" in url:
+            # Remove o parametro mantendo a integridade da URL
+            url = url.replace("?pgbouncer=true", "")
+            url = url.replace("&pgbouncer=true", "")
+        return url
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

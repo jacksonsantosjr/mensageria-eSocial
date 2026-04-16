@@ -11,7 +11,7 @@ from core.config import settings
 # Engine configurada para o Supabase (PostgreSQL)
 # echo=True pode ser ativado para debug de queries SQL em desenvolvimento
 engine = create_engine(
-    settings.database_url,
+    settings.sqlalchemy_database_url,
     echo=not settings.is_production,
     pool_size=10,
     max_overflow=20
