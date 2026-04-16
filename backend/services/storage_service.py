@@ -27,8 +27,11 @@ class StorageService:
             response = await client.post(upload_url, content=content, headers=headers)
             
             if response.status_code != 200:
-                logger.error("Erro no upload para Supabase: %s", response.text)
-                raise Exception(f"Falha ao salvar arquivo no Storage: {response.status_code}")
+                text_error = response.text
+                logger.error("Erro no upload para Supabase: %s", text_error)
+                if "Bucket not found" in text_error:
+                    raise Exception("Bucket 'xml-storage' não encontrado no Supabase. Por favor, crie o bucket no painel do Supabase Storage.")
+                raise Exception(f"Falha ao salvar arquivo no Storage ({response.status_code}): {text_error}")
                 
             return f"{self.bucket}/{file_path}"
 
