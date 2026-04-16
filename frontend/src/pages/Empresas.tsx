@@ -85,7 +85,7 @@ export default function Empresas() {
            </div>
            <button 
              onClick={() => setIsModalOpen(true)}
-             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
+             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
            >
              <Plus className="w-4 h-4 mr-2" />
              Nova Empresa
@@ -170,7 +170,7 @@ export default function Empresas() {
                     type="text" 
                     required 
                     placeholder="00.000.000/0000-00"
-                    className="w-full p-3 border border-glass-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
+                    className="w-full p-3 border border-glass-border rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
                     value={cnpj}
                     onChange={e => setCnpj(e.target.value)}
                     onBlur={handleCnpjBlur}
@@ -184,7 +184,7 @@ export default function Empresas() {
                 <input 
                   type="text" 
                   required 
-                  className="w-full p-3 border border-glass-border rounded-xl bg-black/10 outline-none font-semibold text-app-text"
+                  className="w-full p-3 border border-glass-border rounded-lg bg-black/10 outline-none font-semibold text-app-text"
                   value={razaoSocial}
                   onChange={e => setRazaoSocial(e.target.value)}
                   placeholder="Preenchido automaticamente..."
@@ -208,7 +208,7 @@ export default function Empresas() {
                 <label className="block text-sm font-bold text-app-text/60 mb-1">Senha do Certificado</label>
                 <input 
                   type="password" 
-                  className="w-full p-3 border border-glass-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
+                  className="w-full p-3 border border-glass-border rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
                   value={senhaCertificado}
                   onChange={e => setSenhaCertificado(e.target.value)}
                   placeholder="Obrigatória para assinatura automática"
@@ -219,14 +219,14 @@ export default function Empresas() {
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-3 border border-glass-border rounded-xl text-app-text/60 font-semibold hover:bg-black/5 transition active:scale-95"
+                  className="flex-1 px-4 py-3 border border-glass-border rounded-lg text-app-text/60 font-semibold hover:bg-black/5 transition active:scale-95"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
                   disabled={mutation.isPending}
-                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
+                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
                 >
                   {mutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Empresa'}
                 </button>
