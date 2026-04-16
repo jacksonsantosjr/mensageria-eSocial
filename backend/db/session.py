@@ -17,9 +17,19 @@ engine = create_engine(
     max_overflow=20
 )
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def init_db():
     """Cria as tabelas no banco de dados (se nao existirem)."""
-    SQLModel.metadata.create_all(engine)
+    try:
+        SQLModel.metadata.create_all(engine)
+        logger.info("Banco de dados sincronizado com sucesso.")
+    except Exception as e:
+        logger.error("Aviso: Falha ao sincronizar tabelas no startup: %s", e)
+        # Nao levantamos a exceção para permitir que o servidor FastAPI suba 
+        # e possamos diagnosticar via health check ou logs de API.
 
 def get_session():
     """Dependency para injeção de sessão nos endpoints do FastAPI."""
