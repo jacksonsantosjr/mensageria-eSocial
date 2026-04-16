@@ -10,6 +10,7 @@ from typing import Optional
 from sqlmodel import Session, select, desc
 
 from db.session import get_session
+from core.config import settings
 from db.models import Lote, LoteStatus, Empresa, Ambiente, Evento
 from schemas.lote import LoteResponse, LoteDetalheResponse, DashboardResumo
 from services.storage_service import storage_service
@@ -162,11 +163,24 @@ async def enviar_lote(lote_id: uuid.UUID, session: Session = Depends(get_session
     if lote.status != LoteStatus.SIGNED:
         raise HTTPException(status_code=400, detail="Apenas lotes com status ASSINADO (SIGNED) podem ser enviados.")
 
-    # Lógica de envio SOAP real
     try:
-        await processor.transmit_lote(lote_id, session)
-        session.refresh(lote)
+        if settings.mock_esocial:
+            # --- MODO MOCK: Simula transmissão ---
+            import secrets
+            lote.protocolo = f"MOCK-{secrets.token_hex(8).upper()}"
+            lote.status = LoteStatus.SENT
+            lote.updated_at = datetime.utcnow()
+            session.add(lote)
+            session.commit()
+            session.refresh(lote)
+            logger.info("MOCK: Lote %s transmitido com protocolo %s", lote_id, lote.protocolo)
+        else:
+            # --- MODO REAL: SOAP com o governo ---
+            await processor.transmit_lote(lote_id, session)
+            session.refresh(lote)
+        
         return lote
     except Exception as e:
         logger.error("Erro ao enviar lote: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
