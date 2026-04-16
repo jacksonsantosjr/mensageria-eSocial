@@ -1,26 +1,13 @@
-import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLotes, createLote, getEmpresas, signLote, sendLote } from '../services/api';
-import { FileJson, Upload, Loader2, Send, PenTool, Download } from 'lucide-react';
+import { getLotes, signLote, sendLote } from '../services/api';
+import { FileJson, Loader2, Send, PenTool, Download } from 'lucide-react';
 
 export default function Lotes() {
   const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [empresaId, setEmpresaId] = useState('');
 
-  const { data: lotes = [], isLoading: loadingLotes } = useQuery({ queryKey: ['lotes'], queryFn: getLotes });
-  const { data: empresas = [], isLoading: loadingEmpresas } = useQuery({ queryKey: ['empresas'], queryFn: getEmpresas });
-
-  const mutation = useMutation({
-    mutationFn: (file: File) => createLote(file, empresaId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lotes'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboardResumo'] });
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    },
-    onError: (err: any) => {
-      alert(`Erro ao adicionar lote: ${err}`);
-    }
+  const { data: lotes = [], isLoading: loadingLotes } = useQuery({ 
+    queryKey: ['lotes'], 
+    queryFn: getLotes 
   });
 
   const signMutation = useMutation({
@@ -37,12 +24,6 @@ export default function Lotes() {
     },
     onError: (err: any) => alert(`Erro ao enviar: ${err}`)
   });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!empresaId) return alert('Selecione uma empresa antes de fazer upload.');
-    const file = e.target.files?.[0];
-    if (file) mutation.mutate(file);
-  };
 
   const StatusBadge = ({ status }: { status: string }) => {
      const styles: Record<string, string> = {
@@ -80,13 +61,13 @@ export default function Lotes() {
                     <tr>
                         <th className="px-6 py-4">Lote / Data</th>
                         <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-center">Eventos</th>
+                        <th className="px-6 py-4 text-center" title="Total de Eventos no Lote">Evt.</th>
                         <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {lotes.length === 0 && (
-                        <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium">Nenhum lote processado neste ambiente.</td></tr>
+                        <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium italic">Nenhum lote processado neste ambiente.</td></tr>
                     )}
                     {lotes.map((l: any) => (
                         <tr key={l.id} className="hover:bg-gray-50/80 transition-colors">
