@@ -77,15 +77,15 @@ export default function Empresas() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-white">
+      <div className="glass-card overflow-hidden">
+        <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
            <div>
-              <h3 className="text-lg font-bold text-gray-800">Gerenciar Empresas</h3>
-              <p className="text-sm text-gray-500">Cadastre os transmissores autorizados para envio do eSocial.</p>
+              <h3 className="text-lg font-bold text-app-text">Gerenciar Empresas</h3>
+              <p className="text-sm text-app-text/60">Cadastre os transmissores autorizados para envio do eSocial.</p>
            </div>
            <button 
              onClick={() => setIsModalOpen(true)}
-             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition-all active:scale-95"
+             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
            >
              <Plus className="w-4 h-4 mr-2" />
              Nova Empresa
@@ -100,48 +100,48 @@ export default function Empresas() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">
+              <thead className="bg-black/20 text-app-text/60 text-[10px] uppercase font-black tracking-widest">
+                <tr>
                   <th className="px-6 py-4">Razão Social / CNPJ</th>
                   <th className="px-6 py-4">Certificado</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-glass-border">
                 {empresas.length === 0 && (
-                   <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium italic">Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.</td></tr>
+                   <tr><td colSpan={4} className="px-6 py-12 text-center text-app-text/40 font-medium italic">Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.</td></tr>
                 )}
                 {Array.isArray(empresas) && empresas.map((emp: any) => (
-                  <tr key={emp.id} className="hover:bg-gray-50/80 transition-colors">
+                  <tr key={emp.id} className="hover:bg-black/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-gray-100 rounded-lg text-gray-400">
+                        <div className="p-2 bg-black/10 rounded-lg text-app-text/40">
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-bold text-gray-800">{emp.razao_social}</p>
-                          <p className="text-xs text-gray-500 font-mono">{emp.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")}</p>
+                          <p className="font-bold text-app-text">{emp.razao_social}</p>
+                          <p className="text-xs text-app-text/40 font-mono">{emp.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5")}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {emp.certificado_a1 ? (
-                        <div className="flex items-center text-emerald-600 text-sm font-semibold">
+                        <div className="flex items-center text-emerald-500 text-sm font-semibold">
                           <ShieldCheck className="w-4 h-4 mr-1" />
                           Certificado A1 Configurado
                         </div>
                       ) : (
-                        <span className="text-gray-400 text-sm">Sem Certificado</span>
+                        <span className="text-app-text/40 text-sm">Sem Certificado</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-tight ${emp.ativo ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                      <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-tight ${emp.ativo ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                         {emp.ativo ? 'ATIVO' : 'INATIVO'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                       <button className="text-sm text-gray-400 hover:text-primary-600 font-bold transition">Editar</button>
+                       <button className="text-sm text-app-text/40 hover:text-primary-500 font-bold transition">Editar</button>
                     </td>
                   </tr>
                 ))}
@@ -153,24 +153,24 @@ export default function Empresas() {
 
       {/* Modal de Cadastro */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h2 className="text-xl font-bold text-gray-800">Cadastrar Nova Transmissora</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="glass-card w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
+              <h2 className="text-xl font-bold text-app-text">Cadastrar Nova Transmissora</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-app-text/40 hover:text-app-text transition">
                 <X className="w-6 h-6" />
               </button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">CNPJ da Empresa</label>
+                <label className="block text-sm font-bold text-app-text/60 mb-1">CNPJ da Empresa</label>
                 <div className="relative">
                   <input 
                     type="text" 
                     required 
                     placeholder="00.000.000/0000-00"
-                    className="w-full p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-medium transition"
+                    className="w-full p-3 border border-glass-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
                     value={cnpj}
                     onChange={e => setCnpj(e.target.value)}
                     onBlur={handleCnpjBlur}
@@ -180,11 +180,11 @@ export default function Empresas() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Razão Social</label>
+                <label className="block text-sm font-bold text-app-text/60 mb-1">Razão Social</label>
                 <input 
                   type="text" 
                   required 
-                  className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 outline-none font-semibold text-gray-800"
+                  className="w-full p-3 border border-glass-border rounded-xl bg-black/10 outline-none font-semibold text-app-text"
                   value={razaoSocial}
                   onChange={e => setRazaoSocial(e.target.value)}
                   placeholder="Preenchido automaticamente..."
@@ -192,23 +192,23 @@ export default function Empresas() {
               </div>
 
               <div className="pt-2">
-                <label className="block text-sm font-bold text-gray-700 mb-1">Certificado Digital A1 (.pfx)</label>
+                <label className="block text-sm font-bold text-app-text/60 mb-1">Certificado Digital A1 (.pfx)</label>
                 <div className="flex items-center space-x-2">
                    <input 
                     type="file" 
                     accept=".pfx,.p12"
                     onChange={handleFileChange}
-                    className="flex-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition cursor-pointer"
+                    className="flex-1 text-sm text-app-text/40 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-500 hover:file:bg-primary-500/20 transition cursor-pointer"
                   />
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-widest">Apenas arquivos .pfx ou .p12</p>
+                <p className="text-[10px] text-app-text/30 mt-1 uppercase font-black tracking-widest">Apenas arquivos .pfx ou .p12</p>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Senha do Certificado</label>
+                <label className="block text-sm font-bold text-app-text/60 mb-1">Senha do Certificado</label>
                 <input 
                   type="password" 
-                  className="w-full p-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 font-medium transition"
+                  className="w-full p-3 border border-glass-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
                   value={senhaCertificado}
                   onChange={e => setSenhaCertificado(e.target.value)}
                   placeholder="Obrigatória para assinatura automática"
@@ -219,14 +219,14 @@ export default function Empresas() {
                 <button 
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition active:scale-95"
+                  className="flex-1 px-4 py-3 border border-glass-border rounded-xl text-app-text/60 font-semibold hover:bg-black/5 transition active:scale-95"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
                   disabled={mutation.isPending}
-                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-primary-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
+                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
                 >
                   {mutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Empresa'}
                 </button>

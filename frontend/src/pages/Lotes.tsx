@@ -46,10 +46,10 @@ export default function Lotes() {
   return (
     <div className="space-y-6">
       {/* Histórico e Ações */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-bold text-gray-800">Gerenciamento de Lotes</h3>
-            <button className="text-sm text-primary-600 font-semibold hover:underline" onClick={() => queryClient.invalidateQueries({ queryKey: ['lotes'] })}>
+      <div className="glass-card overflow-hidden">
+         <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
+            <h3 className="text-lg font-bold text-app-text">Gerenciamento de Lotes</h3>
+            <button className="text-sm text-primary-500 font-semibold hover:underline" onClick={() => queryClient.invalidateQueries({ queryKey: ['lotes'] })}>
                 Atualizar Lista
             </button>
          </div>
@@ -57,35 +57,35 @@ export default function Lotes() {
          {loadingLotes ? <div className="p-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500" /></div> : (
            <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="bg-gray-50/80 text-gray-600 text-xs uppercase font-bold tracking-wider">
+                <thead className="bg-black/20 text-app-text/60 text-[10px] uppercase font-black tracking-widest">
                     <tr>
                         <th className="px-6 py-4">Lote / Data</th>
                         <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-center" title="Total de Eventos no Lote">Evt.</th>
+                        <th className="px-6 py-4 text-center">Evt.</th>
                         <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-glass-border">
                     {lotes.length === 0 && (
-                        <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium italic">Nenhum lote processado neste ambiente.</td></tr>
+                        <tr><td colSpan={4} className="px-6 py-12 text-center text-app-text/40 font-medium italic">Nenhum lote processado neste ambiente.</td></tr>
                     )}
                     {lotes.map((l: any) => (
-                        <tr key={l.id} className="hover:bg-gray-50/80 transition-colors">
+                        <tr key={l.id} className="hover:bg-black/5 transition-colors">
                             <td className="px-6 py-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="p-2 bg-primary-100 rounded-lg text-primary-600">
+                                    <div className="p-2 bg-primary-500/10 rounded-lg text-primary-500">
                                         <FileJson className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="font-mono text-sm text-gray-700 font-bold">{l.id.substring(0, 13)}...</p>
-                                        <p className="text-xs text-gray-400">{new Date(l.created_at).toLocaleString('pt-BR')}</p>
+                                        <p className="font-mono text-sm text-app-text font-bold">{l.id.substring(0, 13)}...</p>
+                                        <p className="text-xs text-app-text/40">{new Date(l.created_at).toLocaleString('pt-BR')}</p>
                                     </div>
                                 </div>
                             </td>
                             <td className="px-6 py-4">
                                 <StatusBadge status={l.status} />
                             </td>
-                            <td className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+                            <td className="px-6 py-4 text-center text-sm font-semibold text-app-text/80">
                                 {l.total_eventos}
                             </td>
                             <td className="px-6 py-4">
@@ -94,7 +94,7 @@ export default function Lotes() {
                                     {l.status === 'PENDING' && (
                                         <button 
                                             title="Assinar Lote"
-                                            className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition shadow-sm border border-blue-200"
+                                            className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20"
                                             onClick={() => signMutation.mutate(l.id)}
                                             disabled={signMutation.isPending}
                                         >
@@ -106,7 +106,7 @@ export default function Lotes() {
                                     {l.status === 'SIGNED' && (
                                         <button 
                                             title="Enviar para eSocial"
-                                            className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition shadow-sm border border-emerald-200"
+                                            className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500/20 transition border border-emerald-500/20"
                                             onClick={() => sendMutation.mutate(l.id)}
                                             disabled={sendMutation.isPending}
                                         >
@@ -117,7 +117,7 @@ export default function Lotes() {
                                     {/* Botão Download */}
                                     <button 
                                         title="Baixar XML Original"
-                                        className="p-2 bg-gray-50 text-gray-500 rounded-lg hover:bg-gray-100 transition border border-gray-200"
+                                        className="p-2 bg-black/5 text-app-text/40 rounded-lg hover:bg-black/10 transition border border-glass-border"
                                     >
                                         <Download className="w-4 h-4" />
                                     </button>

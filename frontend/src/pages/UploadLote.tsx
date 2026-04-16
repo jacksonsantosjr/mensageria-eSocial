@@ -69,14 +69,14 @@ export default function UploadLote() {
             <Upload className="w-6 h-6" />
          </div>
          <div>
-            <h2 className="text-2xl font-black text-gray-800 tracking-tight">Novo Lote eSocial</h2>
-            <p className="text-gray-500 font-medium">Envie seus arquivos XML para validação e assinatura.</p>
+            <h2 className="text-2xl font-black text-app-text tracking-tight">Novo Lote eSocial</h2>
+            <p className="text-app-text/60 font-medium">Envie seus arquivos XML para validação e assinatura.</p>
          </div>
       </div>
 
       {/* 1. Seleção de Empresa */}
-      <div className="bg-white p-8 rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 flex flex-col space-y-4">
-         <div className="flex items-center space-x-2 text-gray-700">
+      <div className="glass-card p-8 flex flex-col space-y-4">
+         <div className="flex items-center space-x-2 text-app-text">
             <Building2 className="w-5 h-5 text-primary-500" />
             <h3 className="font-bold text-lg">Selecione a Empresa Transmissora</h3>
          </div>
@@ -93,12 +93,16 @@ export default function UploadLote() {
             </div>
          ) : (
             <select
-              className="w-full p-4 border border-gray-200 rounded-2xl outline-none focus:ring-4 focus:ring-primary-100 bg-gray-50/50 font-bold text-gray-700 transition appearance-none cursor-pointer"
+              className="w-full p-4 border border-glass-border rounded-2xl outline-none focus:ring-4 focus:ring-primary-500/20 bg-black/5 font-bold text-app-text transition appearance-none cursor-pointer"
               value={empresaId} 
               onChange={e => setEmpresaId(e.target.value)}
             >
-              <option value="">-- Selecione a empresa --</option>
-              {Array.isArray(empresas) && empresas.map((e:any) => <option key={e.id} value={e.id}>{e.razao_social} ({e.cnpj})</option>)}
+              <option value="" className="bg-app-bg text-app-text">-- Selecione a empresa --</option>
+              {Array.isArray(empresas) && empresas.map((e:any) => (
+                <option key={e.id} value={e.id} className="bg-app-bg text-app-text">
+                  {e.razao_social} ({e.cnpj})
+                </option>
+              ))}
             </select>
          )}
       </div>
@@ -110,8 +114,8 @@ export default function UploadLote() {
          onDragOver={handleDrag}
          onDrop={handleDrop}
          onClick={() => !mutation.isPending && fileInputRef.current?.click()}
-         className={`relative group bg-white p-12 rounded-[40px] shadow-2xl shadow-gray-200 flex flex-col items-center justify-center border-4 border-dashed transition-all duration-300 cursor-pointer overflow-hidden
-           ${dragActive ? 'border-primary-500 bg-primary-50/30 scale-[1.02]' : 'border-gray-100 hover:border-primary-200 hover:bg-gray-50/50'}
+         className={`relative group glass-card p-12 flex flex-col items-center justify-center border-2 border-dashed transition-all duration-300 cursor-pointer overflow-hidden
+           ${dragActive ? 'border-primary-500 bg-primary-500/5 scale-[1.02]' : 'border-glass-border hover:border-primary-500/50 hover:bg-black/5'}
            ${mutation.isPending ? 'pointer-events-none opacity-80' : ''}`}
       >
         <input 
@@ -132,33 +136,33 @@ export default function UploadLote() {
               <div className="relative mb-6">
                  <Loader2 className="w-24 h-24 text-primary-500 animate-spin mx-auto" />
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-primary-600" />
+                    <Upload className="w-8 h-8 text-primary-500" />
                  </div>
               </div>
-              <h3 className="text-2xl font-black text-gray-800 mb-2">Processando XML...</h3>
-              <p className="text-gray-500 font-medium">Extraindo eventos e validando esquema S-1.3</p>
+              <h3 className="text-2xl font-black text-app-text mb-2">Processando XML...</h3>
+              <p className="text-app-text/60 font-medium">Extraindo eventos e validando esquema S-1.3</p>
            </div>
         ) : (
            <div className="text-center relative z-10">
-              <div className="w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                 <Upload className="w-12 h-12 text-primary-600" />
+              <div className="w-24 h-24 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <Upload className="w-12 h-12 text-primary-500" />
               </div>
-              <h3 className="text-3xl font-black text-gray-800 mb-3 tracking-tight">Solte o seu arquivo aqui</h3>
-              <p className="text-gray-500 font-bold mb-8">ou clique para selecionar do seu computador</p>
+              <h3 className="text-3xl font-black text-app-text mb-3 tracking-tight">Solte o seu arquivo aqui</h3>
+              <p className="text-app-text/60 font-bold mb-8">ou clique para selecionar do seu computador</p>
               
-              <div className="inline-flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full text-xs font-black text-gray-400 uppercase tracking-widest">
+              <div className="inline-flex items-center space-x-2 bg-black/10 px-4 py-2 rounded-full text-xs font-black text-app-text/40 uppercase tracking-widest">
                  <span>Formatos suportados:</span>
-                 <span className="text-primary-600">.XML</span>
+                 <span className="text-primary-500">.XML</span>
               </div>
            </div>
         )}
       </div>
 
-      <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 flex items-start space-x-4">
+      <div className="bg-blue-500/10 p-6 rounded-2xl border border-blue-500/20 flex items-start space-x-4">
          <AlertCircle className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
          <div className="text-sm">
-            <p className="font-bold text-blue-800 mb-1">Dica de Transmissão</p>
-            <p className="text-blue-700 font-medium leading-relaxed">
+            <p className="font-bold text-blue-500 mb-1">Dica de Transmissão</p>
+            <p className="text-app-text/70 font-medium leading-relaxed">
                Lotes XML podem conter múltiplos eventos (S-1000, S-2200, etc.). 
                O sistema irá desmembrar cada evento para validação individual antes da assinatura final.
             </p>
