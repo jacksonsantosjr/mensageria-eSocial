@@ -4,6 +4,7 @@ Utiliza fpdf2 para criar comprovantes de entrega elegantes e profissionais.
 """
 import io
 import logging
+import httpx
 from datetime import datetime
 from fpdf import FPDF
 from db.models import Lote, Evento, Empresa, LoteStatus, Ambiente
@@ -34,27 +35,34 @@ class PDFService:
     def _setup_document(self, pdf: PDFReceiptGenerator, empresa: Empresa):
         pdf.add_page()
         
-        # Logo ou Nome da Empresa
-        if empresa.logo_path:
-            # Em um ambiente real, precisaríamos baixar o arquivo do storage ou usar URL
-            # Por simplicidade neste MVP, se não conseguirmos carregar a imagem, usamos texto
+        # Logo da Empresa
+        has_logo = False
+        if empresa.logo_path and empresa.logo_path.startswith("http"):
             try:
-                # Nota: fpdf2 suporta URLs mas depende de libs externas ou download prévio
-                # Aqui vamos simular o espaço do logo
-                pdf.set_font("helvetica", "B", 16)
-                pdf.set_text_color(0, 51, 102) # Azul Corporativo
-                pdf.cell(0, 10, empresa.razao_social.upper(), ln=True, align="L")
-            except:
-                pdf.set_font("helvetica", "B", 16)
-                pdf.cell(0, 10, empresa.razao_social.upper(), ln=True)
-        else:
+                # Download temporário do logo via httpx
+                with httpx.Client() as client:
+                    resp = client.get(empresa.logo_path, timeout=5.0)
+                    if resp.status_code == 200:
+                        logo_data = io.BytesIO(resp.content)
+                        # Insere no topo esquerdo (10, 10) com largura de 30mm
+                        pdf.image(logo_data, x=10, y=10, w=30)
+                        has_logo = True
+                        pdf.ln(18) # Espanço maior após o logo
+            except Exception as e:
+                logger.error(f"Falha ao carregar logo no PDF: {e}")
+
+        if not has_logo:
+            # Fallback corporativo elegante
             pdf.set_font("helvetica", "B", 16)
-            pdf.set_text_color(0, 51, 102)
-            pdf.cell(0, 10, empresa.razao_social.upper(), ln=True)
+            pdf.set_text_color(0, 51, 102) # Azul Corporativo (Navy)
+            pdf.cell(0, 10, empresa.razao_social.upper(), ln=True, align="L")
             
         pdf.set_font("helvetica", "", 10)
         pdf.set_text_color(100, 100, 100)
-        pdf.cell(0, 6, f"CNPJ: {empresa.cnpj}", ln=True)
+        # Formata CNPJ se tiver 14 dígitos
+        clean_cnpj = empresa.cnpj.replace(".", "").replace("/", "").replace("-", "")
+        formatted_cnpj = f"{clean_cnpj[:2]}.{clean_cnpj[2:5]}.{clean_cnpj[5:8]}/{clean_cnpj[8:12]}-{clean_cnpj[12:]}" if len(clean_cnpj) == 14 else empresa.cnpj
+        pdf.cell(0, 6, f"CNPJ: {formatted_cnpj}", ln=True)
         pdf.ln(10)
         
         # Título do Documento
