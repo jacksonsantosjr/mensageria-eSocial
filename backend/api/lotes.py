@@ -111,25 +111,6 @@ async def obter_lote(lote_id: uuid.UUID, session: Session = Depends(get_session)
         
     return {**lote_dict, "eventos": lote.eventos}
 
-@router.get("/dashboard/resumo", response_model=DashboardResumo)
-async def dashboard_resumo(
-    empresa_id: Optional[uuid.UUID] = Query(None), 
-    session: Session = Depends(get_session)
-):
-    """Consolida métricas reais do banco de dados para os cards do Dashboard."""
-    statement = select(Lote)
-    if empresa_id:
-        statement = statement.where(Lote.empresa_id == empresa_id)
-    
-    lotes = session.exec(statement).all()
-    
-    return {
-        "total": len(lotes),
-        "pendentes": len([l for l in lotes if l.status in (LoteStatus.PENDING, LoteStatus.VALIDATING, LoteStatus.SIGNED)]),
-        "enviados": len([l for l in lotes if l.status in (LoteStatus.SENT, LoteStatus.PROCESSING)]),
-        "processados": len([l for l in lotes if l.status == LoteStatus.PROCESSED]),
-        "com_erro": len([l for l in lotes if l.status == LoteStatus.ERROR]),
-    }
 
 @router.post("/lotes/{lote_id}/sign", response_model=LoteResponse)
 async def assinar_lote(lote_id: uuid.UUID, session: Session = Depends(get_session)):
