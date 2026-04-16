@@ -24,7 +24,8 @@ RUN pip install --no-cache-dir -r ./backend/requirements.txt
 
 # Copiar códigos das chaves, scripts e base backend
 COPY backend ./backend/
-COPY certs ./certs/
+# Criar pasta para certificados (caso necessário para arquivos temporários)
+RUN mkdir -p certs
 
 # Importar frontend construido do container `frontend-builder`
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist/
