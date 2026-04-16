@@ -176,8 +176,10 @@ export default function Empresas() {
                                 <Building2 className="w-6 h-6 text-app-text/30 group-hover:opacity-0 transition-opacity" />
                               )}
                               
-                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Camera className="w-5 h-5 text-white" />
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
+                                <div className="bg-primary-500 p-1.5 rounded-full shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
+                                  <Camera className="w-4 h-4 text-white" />
+                                </div>
                               </div>
                             </div>
                             <input 
@@ -280,6 +282,34 @@ export default function Empresas() {
                 </div>
                 <p className="text-[10px] text-app-text/30 mt-1 uppercase font-black tracking-widest">Apenas arquivos .pfx ou .p12</p>
               </div>
+
+              {editingId && (
+                <div className="pt-2 p-4 bg-primary-500/5 rounded-xl border border-primary-500/10">
+                  <label className="block text-sm font-bold text-primary-400 mb-2 flex items-center">
+                    <Camera className="w-4 h-4 mr-2" /> Logotipo da Empresa
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 rounded-lg bg-black/40 border border-glass-border overflow-hidden flex items-center justify-center">
+                       {empresas.find((e: any) => e.id === editingId)?.logo_url ? (
+                         <img src={empresas.find((e: any) => e.id === editingId).logo_url} className="w-full h-full object-cover" />
+                       ) : (
+                         <Building2 className="w-8 h-8 text-app-text/20" />
+                       )}
+                    </div>
+                    <label className="cursor-pointer flex-1">
+                      <div className="bg-black/20 hover:bg-black/30 text-app-text/60 py-2 px-4 rounded-lg text-center text-xs font-bold border border-dashed border-glass-border transition">
+                        {isUploadingLogo === editingId ? 'Enviando...' : 'Alterar Logotipo'}
+                      </div>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => handleLogoUpload(editingId, e)}
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-bold text-app-text/60 mb-1">Senha do Certificado</label>
