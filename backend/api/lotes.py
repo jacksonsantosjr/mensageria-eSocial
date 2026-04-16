@@ -7,7 +7,7 @@ import logging
 from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Depends, status, BackgroundTasks, Response
 from typing import Optional
-from sqlmodel import Session, select, desc
+from sqlmodel import Session, select, desc, delete
 
 from db.session import get_session
 from core.config import settings
@@ -110,6 +110,19 @@ async def obter_lote(lote_id: uuid.UUID, session: Session = Depends(get_session)
         lote_dict["xml_original_url"] = storage_service.get_public_url(lote.xml_original)
         
     return {**lote_dict, "eventos": lote.eventos}
+
+@router.post("/maintenance/cleanup-empty")
+async def cleanup_empty_lotes(session: Session = Depends(get_session)):
+    """Remove lotes que não possuem eventos (resíduos de testes iniciais)."""
+    statement = select(Lote).where(Lote.total_eventos == 0)
+    to_delete = session.exec(statement).all()
+    count = len(to_delete)
+    
+    for lote in to_delete:
+        session.delete(lote)
+    
+    session.commit()
+    return {"message": f"Limpeza concluída com sucesso.", "removed_count": count}
 
 
 @router.post("/lotes/{lote_id}/sign", response_model=LoteResponse)
