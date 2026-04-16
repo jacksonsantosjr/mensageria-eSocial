@@ -1,3 +1,12 @@
+---
+title: Mensageria eSocial
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # eSocial Mensageria
 
 Sistema independente para transmissão de eventos do eSocial ao governo federal, com validação XSD, assinatura digital (XMLDSIG) e consulta assíncrona de protocolos.
