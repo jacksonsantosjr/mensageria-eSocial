@@ -12,7 +12,7 @@ from sqlmodel import Session, select, desc
 from db.session import get_session
 from core.config import settings
 from db.models import Lote, LoteStatus, Empresa, Ambiente, Evento
-from schemas.lote import LoteResponse, LoteDetalheResponse, DashboardResumo
+from schemas.lote import LoteResponse, LoteDetalheResponse
 from services.storage_service import storage_service
 from services.batch_processor import BatchProcessor
 from services.pdf_service import pdf_service
