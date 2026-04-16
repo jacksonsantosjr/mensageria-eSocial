@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLotes, signLote, sendLote, downloadLotePDF, downloadEventoPDF } from '../services/api';
+import { getLotes, signLote, sendLote, downloadLotePDF, downloadEventoPDF, getLote } from '../services/api';
 import { FileJson, Loader2, Send, PenTool, Download, FileText, Eye, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 import { useState } from 'react';
@@ -8,6 +8,7 @@ export default function Lotes() {
   const queryClient = useQueryClient();
   const { showAlert } = useAlert();
   const [selectedLote, setSelectedLote] = useState<any | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState<string | null>(null);
 
   const { data: lotes = [], isLoading: loadingLotes } = useQuery({ 
     queryKey: ['lotes'], 
@@ -124,10 +125,21 @@ export default function Lotes() {
                                     {/* Botão Ver Detalhes */}
                                     <button 
                                         title="Ver Eventos do Lote"
-                                        className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20"
-                                        onClick={() => setSelectedLote(l)}
+                                        className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20 disabled:opacity-50"
+                                        onClick={async () => {
+                                            setLoadingDetails(l.id);
+                                            try {
+                                                const loteDetalhado = await getLote(l.id);
+                                                setSelectedLote(loteDetalhado);
+                                            } catch (e) {
+                                                showAlert("Erro", "Falha ao carregar os eventos detalhados.", "error");
+                                            } finally {
+                                                setLoadingDetails(null);
+                                            }
+                                        }}
+                                        disabled={loadingDetails === l.id}
                                     >
-                                        <Eye className="w-4 h-4" />
+                                        {loadingDetails === l.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
                                     </button>
 
                                     {/* Botão PDF Lote */}

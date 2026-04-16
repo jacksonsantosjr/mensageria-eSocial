@@ -63,6 +63,11 @@ export const getLotes = async () => {
     return response.data;
 };
 
+export const getLote = async (id: string) => {
+    const response = await api.get(`/lotes/${id}`);
+    return response.data;
+};
+
 export const createLote = async (file: File, empresaId: string) => {
     const formData = new FormData();
     formData.append('file', file);
