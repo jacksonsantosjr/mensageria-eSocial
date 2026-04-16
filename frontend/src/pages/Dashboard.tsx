@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardResumo } from '../services/api';
 import { StatusBadge } from '../components/StatusBadge';
-import { ArrowRight, BarChart3, Database, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowRight, BarChart3, Database, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function Dashboard() {
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['dashboard_resumo'],
     queryFn: getDashboardResumo,
     refetchInterval: 10000 // Atualiza a cada 10s
