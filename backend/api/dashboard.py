@@ -17,13 +17,12 @@ async def get_dashboard_resumo(session: Session = Depends(get_session)):
     total_lotes = session.exec(select(func.count(Lote.id))).first() or 0
     
     # 2. Pendentes (PENDING, VALIDATING, SIGNED)
-    pendentes = session.exec(
-        select(func.count(Lote.id)).where(Lote.status.in_([
-            LoteStatus.PENDING, 
-            LoteStatus.VALIDATING, 
-            LoteStatus.SIGNED
-        ]))
-    ).first() or 0
+    pendentes_query = select(func.count(Lote.id)).where(Lote.status.in_([
+        LoteStatus.PENDING.value, 
+        LoteStatus.VALIDATING.value, 
+        LoteStatus.SIGNED.value
+    ]))
+    pendentes = session.exec(pendentes_query).first() or 0
     
     # 3. Processados (PROCESSED)
     processados = session.exec(
@@ -46,5 +45,5 @@ async def get_dashboard_resumo(session: Session = Depends(get_session)):
             "processed": processados,
             "errors": erros
         },
-        "recent_lotes": [LoteResponse.model_validate(l) for l in recent_lotes]
+        "recent_lotes": [LoteResponse.model_validate(l).model_dump(mode="json") for l in recent_lotes]
     }
