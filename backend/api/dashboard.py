@@ -18,9 +18,9 @@ async def get_dashboard_resumo(session: Session = Depends(get_session)):
     
     # 2. Pendentes (PENDING, VALIDATING, SIGNED)
     pendentes_query = select(func.count(Lote.id)).where(Lote.status.in_([
-        LoteStatus.PENDING.value, 
-        LoteStatus.VALIDATING.value, 
-        LoteStatus.SIGNED.value
+        LoteStatus.PENDING, 
+        LoteStatus.VALIDATING, 
+        LoteStatus.SIGNED
     ]))
     pendentes = session.exec(pendentes_query).first() or 0
     
