@@ -5,6 +5,7 @@ import { Dashboard } from './pages/Dashboard';
 import Empresas from './pages/Empresas';
 import Lotes from './pages/Lotes';
 import UploadLote from './pages/UploadLote';
+import Configuracoes from './pages/Configuracoes';
 import { AlertProvider } from './context/AlertContext';
 import { AlertModal } from './components/AlertModal';
 
@@ -29,7 +30,8 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/upload" element={<UploadLote />} />
               <Route path="/lotes" element={<Lotes />} />
-              <Route path="/configuracoes" element={<Empresas />} />
+              <Route path="/empresas" element={<Empresas />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
               
               {/* Fallback para home */}
               <Route path="*" element={<Navigate to="/" replace />} />

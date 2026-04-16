@@ -116,3 +116,12 @@ class Evento(SQLModel, table=True):
 
     # Relacionamentos
     lote: Optional[Lote] = Relationship(back_populates="eventos")
+
+
+class SystemConfig(SQLModel, table=True):
+    """Configurações globais do sistema."""
+    __tablename__ = "system_config"
+
+    key: str = Field(primary_key=True)
+    value: str = Field(max_length=50)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

@@ -7,10 +7,11 @@ import uuid
 from datetime import datetime
 from sqlmodel import Session
 from core.config import settings
-from db.models import Lote, Evento, EventoStatus, LoteStatus, Empresa
 from services.xml_validator import XmlValidator
 from services.xml_signer import XmlSigner
+from services.soap_client import ESocialSoapClient
 from services.storage_service import storage_service
+from db.models import Lote, Evento, EventoStatus, LoteStatus, Empresa, SystemConfig, Ambiente
 
 logger = logging.getLogger(__name__)
 
@@ -107,4 +108,62 @@ class BatchProcessor:
             
         except Exception as e:
             logger.error("Falha na assinatura A1: %s", str(e))
+            raise e
+
+    async def transmit_lote(self, lote_id: uuid.UUID, session: Session):
+        """Transmite o lote assinado para o WebService do eSocial."""
+        lote_db = session.get(Lote, lote_id)
+        if not lote_db:
+            raise Exception("Lote não encontrado")
+
+        if lote_db.status != LoteStatus.SIGNED:
+            raise Exception("Lote deve estar ASSINADO para ser transmitido")
+
+        empresa = session.get(Empresa, lote_db.empresa_id)
+        if not empresa or not empresa.cert_base64:
+            raise Exception("Certificado A1 da empresa não encontrado para transmissão")
+
+        try:
+            # 1. Busca ambiente ativo no sistema
+            config = session.get(SystemConfig, "active_ambiente")
+            ambiente_alvo = config.value if config else Ambiente.HOMOLOGATION
+            
+            # Atualiza o ambiente no lote para histórico
+            lote_db.ambiente = ambiente_alvo
+            
+            logger.info("Iniciando transmissão SOAP para o lote %s no ambiente %s", lote_id, ambiente_alvo)
+            
+            # 2. Busca o XML do Storage
+            # Preferimos o assinado, se não houver (para testes mTLS), usamos o original
+            xml_path = lote_db.xml_assinado or lote_db.xml_original
+            if not xml_path:
+                raise Exception("Arquivo XML do lote não encontrado no histórico")
+                
+            lote_content = await storage_service.download_file(xml_path)
+            lote_xml = lote_content.decode('utf-8', errors='ignore')
+
+            # 3. Comunicação SOAP
+            client = ESocialSoapClient(ambiente=ambiente_alvo)
+            protocolo = client.enviar_lote(
+                lote_xml, 
+                empresa.cert_base64, 
+                empresa.cert_password
+            )
+
+            # 4. Sucesso no Envio
+            lote_db.protocolo = protocolo
+            lote_db.status = LoteStatus.SENT
+            lote_db.updated_at = datetime.utcnow()
+            session.add(lote_db)
+            session.commit()
+            
+            logger.info("Lote %s transmitido com sucesso. Protocolo: %s", lote_id, protocolo)
+            return protocolo
+
+        except Exception as e:
+            logger.error("Falha na transmissão SOAP do lote %s: %s", lote_id, str(e))
+            lote_db.status = LoteStatus.ERROR
+            lote_db.erro_geral = f"Erro SOAP: {str(e)}"
+            session.add(lote_db)
+            session.commit()
             raise e

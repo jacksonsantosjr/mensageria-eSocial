@@ -1,5 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileUp, Activity, Inbox, ShieldAlert, Sun, Moon, Settings } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getSystemConfig } from '../services/api';
 import { clsx } from 'clsx';
 import { useState, useEffect } from 'react';
 
@@ -7,25 +9,13 @@ export function Layout() {
   const location = useLocation();
   const [isDark, setIsDark] = useState(true);
 
-  // Inicializa o modo dark no root html (garante comportamento correto on load)
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
+  const { data: config } = useQuery({
+    queryKey: ['systemConfig'],
+    queryFn: getSystemConfig,
+    refetchInterval: 15000 // Verifica troca de ambiente a cada 15s
+  });
 
-  const toggleTheme = () => setIsDark(!isDark);
-
-  const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Upload Lote', path: '/upload', icon: FileUp },
-    { name: 'Meus Lotes', path: '/lotes', icon: Inbox },
-    { name: 'Configurações', path: '/configuracoes', icon: Settings },
-  ];
-
-  const isProd = false;
+  const isProd = config?.value === 'PRODUCTION';
 
   return (
     <div className="flex h-screen overflow-hidden text-slate-200 transition-colors duration-300">

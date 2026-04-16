@@ -1,135 +1,148 @@
-import logging
-import uuid
+"""
+Cliente SOAP para comunicação mTLS com os WebServices do eSocial.
+Utiliza a biblioteca cryptography para processar certificados PFX em memória.
+"""
+import ssl
 import tempfile
 import os
-import atexit
-from dataclasses import dataclass, field
-from typing import Optional
+import base64
+import requests
+from lxml import etree
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.hazmat.primitives import serialization
+from typing import Tuple, Optional
 
-from core.config import settings
-from core.exceptions import SoapClientError
+class ESocialSoapClient:
+    # URLs de Produção Restrita (Homologação)
+    URL_ENVIO_HOMOLOG = "https://webservices.producaorestrita.esocial.gov.br/servicos/empregador/enviarloteeventos/WsEnviarLoteEventos.svc"
+    URL_CONSULTA_HOMOLOG = "https://webservices.producaorestrita.esocial.gov.br/servicos/empregador/consultarloteeventos/WsConsultarLoteEventos.svc"
 
-try:
-    import zeep
-    from zeep.transports import Transport
-    import requests
-except ImportError:
-    pass
+    # URLs de Produção
+    URL_ENVIO_PROD = "https://webservices.esocial.gov.br/servicos/empregador/enviarloteeventos/WsEnviarLoteEventos.svc"
+    URL_CONSULTA_PROD = "https://webservices.esocial.gov.br/servicos/empregador/consultarloteeventos/WsConsultarLoteEventos.svc"
 
-logger = logging.getLogger(__name__)
-
-@dataclass
-class SendBatchResponse:
-    protocolo: str
-    cd_resposta: str
-    desc_resposta: str
-
-@dataclass
-class EventResult:
-    event_id: str
-    nr_recibo: Optional[str]
-    cd_resposta: str
-    desc_resposta: str
-    ocorrencias: list[dict] = field(default_factory=list)
-
-@dataclass
-class ConsultBatchResponse:
-    cd_resposta: str
-    desc_resposta: str
-    eventos: list[EventResult] = field(default_factory=list)
-
-class EsocialSoapClient:
-    def __init__(self, environment: str, cert_pem: bytes = b"", key_pem: bytes = b""):
-        self.environment = environment
-        self.mock_mode = settings.mock_esocial
-        self.cert_pem = cert_pem
-        self.key_pem = key_pem
-        self._consult_count = {}
-        self._temp_files = []
-
-        if environment == "production":
-            self.send_wsdl = "https://webservices.esocial.gov.br/servicos/empregador/lote/eventos/envio/v1_1_0/WsdlServicoEnvioLoteEventos.wsdl"
-            self.consult_wsdl = "https://webservices.esocial.gov.br/servicos/empregador/lote/eventos/envio/consulta/v1_1_0/WsdlServicoConsultaLoteEventos.wsdl"
+    def __init__(self, ambiente: str = "HOMOLOGATION"):
+        self.ambiente = ambiente
+        if ambiente == "PRODUCTION":
+            self.url_envio = self.URL_ENVIO_PROD
+            self.url_consulta = self.URL_CONSULTA_PROD
         else:
-            self.send_wsdl = "https://webservices.esocial.gov.br/servicos/empregador/lote/eventos/envio/v1_1_0/"
-            self.consult_wsdl = "https://webservices.esocial.gov.br/servicos/empregador/lote/eventos/envio/consulta/v1_1_0/"
+            self.url_envio = self.URL_ENVIO_HOMOLOG
+            self.url_consulta = self.URL_CONSULTA_HOMOLOG
 
-    def _build_transport(self):
-        session = requests.Session()
-        if self.cert_pem and self.key_pem:
-            cert_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pem")
-            key_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pem")
-            cert_file.write(self.cert_pem)
-            key_file.write(self.key_pem)
-            cert_file.close()
-            key_file.close()
+    def _extract_pfx(self, cert_base64: str, password: str) -> Tuple[bytes, bytes]:
+        """Extrai certificado PEM e chave PEM de um PFX base64."""
+        pfx_data = base64.b64decode(cert_base64)
+        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+            pfx_data, 
+            password.encode() if password else None
+        )
 
-            self._temp_files.append(cert_file.name)
-            self._temp_files.append(key_file.name)
-            session.cert = (cert_file.name, key_file.name)
-            atexit.register(self._cleanup_temp_certs)
-            
-        return Transport(session=session)
+        cert_pem = certificate.public_bytes(serialization.Encoding.PEM)
+        key_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        
+        return cert_pem, key_pem
 
-    def _cleanup_temp_certs(self):
-        for path in self._temp_files:
-            try:
-                if os.path.exists(path):
-                    os.remove(path)
-            except OSError:
-                pass
+    def enviar_lote(self, lote_xml: str, cert_base64: str, cert_pass: str) -> str:
+        """Envia o lote assinado e retorna o Protocolo."""
+        cert_pem, key_pem = self._extract_pfx(cert_base64, cert_pass)
+        
+        # O XML do lote deve ser envelopado
+        # Nota: O eSocial espera o conteúdo XML do lote dentro da tag <loteEventos>
+        # O conteúdo deve ser escapado ou passado como um nó.
+        
+        soap_envelope = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:env="http://www.esocial.gov.br/servicos/distribuicao/enviarloteeventos/v1_1_0">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <env:EnviarLoteEventos>
+         <env:loteEventos>
+            {lote_xml.replace('<?xml version="1.0" encoding="UTF-8"?>', '')}
+         </env:loteEventos>
+      </env:EnviarLoteEventos>
+   </soapenv:Body>
+</soapenv:Envelope>"""
 
-    def send_batch(self, signed_batch_xml: str) -> SendBatchResponse:
-        if self.mock_mode:
-            logger.info("MOCK: Simulando envio de lote.")
-            protocolo = f"1.0.{uuid.uuid4().hex[:20]}"
-            return SendBatchResponse(protocolo=protocolo, cd_resposta="201", desc_resposta="Sucesso MOCK")
-            
+        headers = {
+            "Content-Type": "text/xml; charset=utf-8",
+            "SOAPAction": "http://www.esocial.gov.br/servicos/distribuicao/enviarloteeventos/v1_1_0/ServicoEnviarLoteEventos/EnviarLoteEventos"
+        }
+
+        # Cria arquivos temporários para o mTLS (o requests exige caminho de arquivo para cert/key)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".crt") as cert_file:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".key") as key_file:
+                cert_file.write(cert_pem)
+                key_file.write(key_pem)
+                cert_path = cert_file.name
+                key_path = key_file.name
+
         try:
-            client = zeep.Client(wsdl=self.send_wsdl, transport=self._build_transport())
-            # EnviarLoteEventos eh o nome padrao da operacao no eSocial
-            # A invocacao exata depende da definicao do WSDL, aqui abstrairemos a passagem raw XML
-            logger.info("Realizando envio SOAP de lote.")
-            # Exemplo de payload generico (necessita match exato com WSDL se nao enviar xml string cru)
-            response = client.service.EnviarLoteEventos(loteEventos=signed_batch_xml)
-            
-            # Parsing base de retorno
-            return SendBatchResponse(
-                protocolo=getattr(response, "protocoloEnvio", "1.0.TESTREAL"),
-                cd_resposta=str(getattr(response, "status", {}).get("cdResposta", "201")),
-                desc_resposta=str(getattr(response, "status", {}).get("descResposta", "Enviado com sucesso"))
+            response = requests.post(
+                self.url_envio, 
+                data=soap_envelope.encode('utf-8'), 
+                headers=headers,
+                cert=(cert_path, key_path),
+                timeout=30
             )
-        except Exception as e:
-            logger.error("Erro SOAP EnviarLoteEventos: %s", str(e))
-            raise SoapClientError(f"Falha ao enviar lote via SOAP: {str(e)}")
+            response.raise_for_status()
+            
+            # Parse do Protocolo
+            root = etree.fromstring(response.content)
+            # Namespace do retorno
+            ns = {"ns": "http://www.esocial.gov.br/servicos/distribuicao/enviarloteeventos/v1_1_0"}
+            protocolo = root.xpath("//ns:protocolo/text()", namespaces=ns)
+            
+            if not protocolo:
+                # Se não tem protocolo, pode ser erro no retorno
+                error_msg = root.xpath("//ns:mensagem/text()", namespaces=ns)
+                raise Exception(f"Erro eSocial: {error_msg[0] if error_msg else 'Resposta sem protocolo'}")
+                
+            return protocolo[0]
 
-    def consult_batch(self, protocol_number: str) -> ConsultBatchResponse:
-        if self.mock_mode:
-            logger.info("MOCK: Simulando consulta de lote para protocolo %s", protocol_number)
-            cnt = self._consult_count.get(protocol_number, 0) + 1
-            self._consult_count[protocol_number] = cnt
-            if cnt < 2:
-                return ConsultBatchResponse(cd_resposta="201", desc_resposta="Mock processando")
-            
-            mock_evt = EventResult(
-                event_id="MOCK_EVT_123",
-                nr_recibo="1.0.MOCK0000001",
-                cd_resposta="200",
-                desc_resposta="Processado Sucesso Mock"
-            )
-            return ConsultBatchResponse(cd_resposta="200", desc_resposta="Mock Sucesso", eventos=[mock_evt])
-            
+        finally:
+            if os.path.exists(cert_path): os.remove(cert_path)
+            if os.path.exists(key_path): os.remove(key_path)
+
+    def consultar_lote(self, protocolo: str, cert_base64: str, cert_pass: str) -> dict:
+        """Consulta o processamento do lote via protocolo."""
+        cert_pem, key_pem = self._extract_pfx(cert_base64, cert_pass)
+        
+        soap_envelope = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:cons="http://www.esocial.gov.br/servicos/distribuicao/consultarloteeventos/v1_1_0">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <cons:ConsultarLoteEventos>
+         <cons:consulta>
+            <cons:protocolo>{protocolo}</cons:protocolo>
+         </cons:consulta>
+      </cons:ConsultarLoteEventos>
+   </soapenv:Body>
+</soapenv:Envelope>"""
+
+        headers = {
+            "Content-Type": "text/xml; charset=utf-8",
+            "SOAPAction": "http://www.esocial.gov.br/servicos/distribuicao/consultarloteeventos/v1_1_0/ServicoConsultarLoteEventos/ConsultarLoteEventos"
+        }
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".crt") as cert_file:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".key") as key_file:
+                cert_file.write(cert_pem)
+                key_file.write(key_pem)
+                cert_path = cert_file.name
+                key_path = key_file.name
+
         try:
-            client = zeep.Client(wsdl=self.consult_wsdl, transport=self._build_transport())
-            logger.info("Realizando consulta SOAP de protocolo: %s", protocol_number)
-            
-            response = client.service.ConsultarLoteEventos(consulta={"nrRec": protocol_number})
-            status_cd = str(getattr(response, "status", {}).get("cdResposta", "201"))
-            desc = str(getattr(response, "status", {}).get("descResposta", "Consultado"))
-            
-            eventos_result = []
-            # Tratamento simulado da iteracao de retornos (o WSDL real entrega array em retornoEventos.evento)
-            return ConsultBatchResponse(cd_resposta=status_cd, desc_resposta=desc, eventos=eventos_result)
-        except Exception as e:
-            logger.error("Erro SOAP ConsultarLoteEventos: %s", str(e))
-            raise SoapClientError(f"Falha ao consultar lote: {str(e)}")
+            response = requests.post(
+                self.url_consulta, 
+                data=soap_envelope.encode('utf-8'), 
+                headers=headers,
+                cert=(cert_path, key_path),
+                timeout=30
+            )
+            response.raise_for_status()
+            return {"status": "SUCCESS", "xml": response.text}
+        finally:
+            if os.path.exists(cert_path): os.remove(cert_path)
+            if os.path.exists(key_path): os.remove(key_path)

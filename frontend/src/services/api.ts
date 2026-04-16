@@ -78,3 +78,14 @@ export const getDashboardResumo = async () => {
     const response = await api.get('/dashboard/resumo');
     return response.data;
 };
+
+// --- Configurações ---
+export const getSystemConfig = async () => {
+    const response = await api.get('/config');
+    return response.data;
+};
+
+export const updateSystemConfig = async (value: string) => {
+    const response = await api.put('/config', { value });
+    return response.data;
+};

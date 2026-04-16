@@ -42,7 +42,7 @@ export default function Lotes() {
      
      const label = styles[status] ? status : 'UNKNOWN';
      return (
-        <span className={`px-3 py-1 rounded-full text-xs font-bold border ${styles[status]}`}>
+        <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${styles[status]}`}>
             {label}
         </span>
      );

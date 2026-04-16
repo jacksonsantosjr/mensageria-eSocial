@@ -157,15 +157,11 @@ async def enviar_lote(lote_id: uuid.UUID, session: Session = Depends(get_session
     if lote.status != LoteStatus.SIGNED:
         raise HTTPException(status_code=400, detail="Apenas lotes com status ASSINADO (SIGNED) podem ser enviados.")
 
-    # Lógica de envio SOAP
+    # Lógica de envio SOAP real
     try:
-        # protocolo = await processor.send_to_esocial_lote(lote, session)
-        lote.status = LoteStatus.SENT
-        lote.updated_at = datetime.utcnow()
-        session.add(lote)
-        session.commit()
+        await processor.transmit_lote(lote_id, session)
         session.refresh(lote)
         return lote
     except Exception as e:
         logger.error("Erro ao enviar lote: %s", str(e))
-        raise HTTPException(status_code=500, detail=f"Falha na comunicação com eSocial: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
