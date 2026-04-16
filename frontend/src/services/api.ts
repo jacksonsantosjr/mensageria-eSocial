@@ -1,36 +1,56 @@
 import axios from 'axios';
 
+// A URL base aponta para o backend FastAPI (Hugging Face redireciona via proxy ou porta local)
 export const api = axios.create({
-  baseURL: '/api',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-export const getHealth = async () => {
-  const res = await api.get('/health');
-  return res.data;
+// Interceptor p/ erros
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const detail = error.response?.data?.detail || error.message;
+    console.error('API Error:', detail);
+    return Promise.reject(detail);
+  }
+);
+
+// --- Empresas ---
+export const getEmpresas = async () => {
+    const response = await api.get('/empresas');
+    return response.data;
 };
 
-export const getEmpresas = async () => {
-  const res = await api.get('/empresas');
-  return res.data;
+// --- Lotes ---
+export const getLotes = async () => {
+    const response = await api.get('/lotes');
+    return response.data;
 };
 
 export const createLote = async (file: File, empresaId: string) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const res = await api.post(`/lotes/upload?empresa_id=${empresaId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
-  return res.data;
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await api.post(`/lotes/upload?empresa_id=${empresaId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
 };
 
-export const getLotes = async () => {
-  const res = await api.get('/lotes');
-  return res.data;
+export const signLote = async (loteId: string) => {
+    const response = await api.post(`/lotes/${loteId}/sign`);
+    return response.data;
+};
+
+export const sendLote = async (loteId: string) => {
+    const response = await api.post(`/lotes/${loteId}/send`);
+    return response.data;
 };
 
 export const getDashboardResumo = async () => {
-  const res = await api.get('/dashboard/resumo');
-  return res.data;
+    const response = await api.get('/dashboard/resumo');
+    return response.data;
 };

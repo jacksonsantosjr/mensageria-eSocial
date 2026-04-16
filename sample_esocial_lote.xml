@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eSocial xmlns="http://www.esocial.gov.br/schema/lote/eventos/envio/v1_1_1">
+    <envioLoteEventos>
+        <ideEmpregador>
+            <tpInsc>1</tpInsc>
+            <nrInsc>12345678000199</nrInsc>
+        </ideEmpregador>
+        <ideTransmissor>
+            <tpInsc>1</tpInsc>
+            <nrInsc>12345678000199</nrInsc>
+        </ideTransmissor>
+        <eventos>
+            <!-- Evento S-1000: Informações do Empregador -->
+            <evento Id="ID1123456780000002026041600000000001">
+                <evtInfoEmpregador>
+                    <ideEvento>
+                        <tpAmb>2</tpAmb>
+                        <procEmi>1</procEmi>
+                        <verProc>1.0</verProc>
+                    </ideEvento>
+                    <ideEmpregador>
+                        <tpInsc>1</tpInsc>
+                        <nrInsc>12345678000199</nrInsc>
+                    </ideEmpregador>
+                    <infoEmpregador>
+                        <inclusao>
+                            <idePeriodo>
+                                <iniValid>2026-04</iniValid>
+                            </idePeriodo>
+                            <infoCadastro>
+                                <classTrib>01</classTrib>
+                                <natJurid>2062</natJurid>
+                                <indCoop>0</indCoop>
+                                <indConstr>0</indConstr>
+                                <indDesFolha>0</indDesFolha>
+                                <indOptRegEletron>1</indOptRegEletron>
+                                <contato>
+                                    <nmCont>Jackson Santos</nmCont>
+                                    <foneFix>11999999999</foneFix>
+                                    <email>teste@empresa.com.br</email>
+                                </contato>
+                            </infoCadastro>
+                        </inclusao>
+                    </infoEmpregador>
+                </evtInfoEmpregador>
+            </evento>
+            
+            <!-- Evento S-2200: Cadastramento Inicial de Vínculo -->
+            <evento Id="ID1123456780000002026041600000000002">
+                <evtAdmissao>
+                    <ideEvento>
+                        <tpAmb>2</tpAmb>
+                        <procEmi>1</procEmi>
+                        <verProc>1.0</verProc>
+                    </ideEvento>
+                    <ideEmpregador>
+                        <tpInsc>1</tpInsc>
+                        <nrInsc>12345678000199</nrInsc>
+                    </ideEmpregador>
+                    <trabalhador>
+                        <cpfTrab>12345678901</cpfTrab>
+                        <nmTrab>JOAO DA SILVA TESTE</nmTrab>
+                        <sexo>M</sexo>
+                        <racaCor>1</racaCor>
+                        <estCiv>1</estCiv>
+                        <grauInstr>08</grauInstr>
+                        <nascimento>
+                            <dtNascto>1990-01-01</dtNascto>
+                            <paisNascto>105</paisNascto>
+                            <nmMae>MARIA DA SILVA</nmMae>
+                        </nascimento>
+                    </trabalhador>
+                </evtAdmissao>
+            </evento>
+        </eventos>
+    </envioLoteEventos>
+</eSocial>

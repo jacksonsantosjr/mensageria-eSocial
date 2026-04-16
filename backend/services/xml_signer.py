@@ -1,11 +1,9 @@
-"""
-Assinador XML XMLDSIG para eSocial
-
-Assina eventos individuais e lotes completos usando certificado A1.
-"""
 import logging
+import base64
 from lxml import etree
 from signxml import XMLSigner, XMLVerifier, methods
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.hazmat.primitives import serialization
 
 from core.exceptions import XmlSigningError
 
@@ -112,3 +110,29 @@ class XmlSigner:
         except Exception as e:
             logger.warning("Falha na verificacao de assinatura: %s", e)
             return False
+
+    def load_pfx(self, pfx_base64: str, password: str) -> tuple[bytes, bytes]:
+        """
+        Extrai certificado e chave privada PEM de um PFX em Base64.
+        
+        Returns:
+            Tuple (cert_pem, key_pem)
+        """
+        try:
+            pfx_data = base64.b64decode(pfx_base64)
+            private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+                pfx_data, 
+                password.encode() if password else None
+            )
+            
+            cert_pem = certificate.public_bytes(serialization.Encoding.PEM)
+            key_pem = private_key.private_bytes(
+                serialization.Encoding.PEM,
+                serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption()
+            )
+            
+            return cert_pem, key_pem
+        except Exception as e:
+            logger.error("Erro ao carregar PFX: %s", str(e))
+            raise XmlSigningError(f"Erro ao carregar certificado PFX: {e}")

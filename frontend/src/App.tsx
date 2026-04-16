@@ -1,27 +1,21 @@
-import { BrowserBouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Layout from './components/ui/Layout';
-import Dashboard from './pages/Dashboard';
-import Empresas from './pages/Empresas';
-import Lotes from './pages/Lotes';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { Dashboard } from './pages/Dashboard';
 
-const queryClient = new QueryClient();
+// Stubs for next modules
+const Upload = () => <div className="glass-panel p-12 text-center text-slate-400">Página de Upload em Construção. Arraste e solte o Lote XML.</div>;
+const LotesList = () => <div className="glass-panel p-12 text-center text-slate-400">Listagem de Eventos e Lotes.</div>;
 
-function App() {
+export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-         <Routes>
-            <Route path="/" element={<Layout />}>
-               <Route index element={<Dashboard />} />
-               <Route path="empresas" element={<Empresas />} />
-               <Route path="lotes" element={<Lotes />} />
-               <Route path="eventos" element={<div className="p-6 text-gray-500">Rastreamento de eventos em construção.</div>} />
-            </Route>
-         </Routes>
-      </Router>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/events" element={<LotesList />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

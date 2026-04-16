@@ -39,7 +39,7 @@ export default function Empresas() {
                 <td className="p-4 font-semibold text-gray-800">{emp.razao_social}</td>
                 <td className="p-4 text-gray-600">{emp.cnpj}</td>
                 <td className="p-4">
-                  <span className='{px-3 py-1 rounded-full text-xs font-semibold ${emp.ativo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}}'>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${emp.ativo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                     {emp.ativo ? 'Ativo' : 'Inativo'}
                   </span>
                 </td>

@@ -12,21 +12,26 @@ from typing import Optional
 class Settings(BaseSettings):
     """Configurações globais da aplicação carregadas de variáveis de ambiente."""
 
-    # --- Banco de Dados ---
-    database_url: str = "postgresql://esocial:esocial_dev@db:5432/esocial_mensageria"
+    # --- Banco de Dados (Supabase Postgres) ---
+    database_url: str 
+    
+    # --- Supabase SDK / Storage ---
+    supabase_url: str
+    supabase_service_role_key: str
+    supabase_storage_bucket: str = "xml-storage"
 
     # --- Ambiente ---
     environment: str = "homologacao"  # production | homologacao
 
     # --- Certificado Digital A1 ---
-    cert_path: str = "/certs"
+    cert_path: str = "/tmp/certs"
     cert_password: str = ""
 
     # --- CNPJ do Transmissor ---
     cnpj_transmissor: str = ""
 
     # --- CORS ---
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # --- Modo Mock ---
     mock_esocial: bool = True
@@ -48,6 +53,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        case_sensitive = False
 
 
 settings = Settings()

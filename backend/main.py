@@ -9,6 +9,9 @@ assíncrona de protocolos via APScheduler.
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 from core.config import settings
 from tasks.scheduler import start_scheduler, shutdown_scheduler
@@ -17,10 +20,8 @@ from tasks.scheduler import start_scheduler, shutdown_scheduler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Gerencia o ciclo de vida da aplicação: startup e shutdown."""
-    # --- Startup ---
     start_scheduler()
     yield
-    # --- Shutdown ---
     shutdown_scheduler()
 
 
@@ -34,7 +35,7 @@ app = FastAPI(
 # --- CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,3 +49,15 @@ from api.lotes import router as lotes_router
 app.include_router(health_router, prefix="/api", tags=["Health"])
 app.include_router(empresas_router, prefix="/api", tags=["Empresas"])
 app.include_router(lotes_router, prefix="/api", tags=["Lotes"])
+
+# --- Frontend SPA Integration ---
+FRONTEND_DIST = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+
+if os.path.exists(FRONTEND_DIST):
+    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="assets")
+
+    # Catch-all para Rotas do React SPA (React Router)
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        index_path = os.path.join(FRONTEND_DIST, "index.html")
+        return FileResponse(index_path)
