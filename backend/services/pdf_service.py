@@ -62,13 +62,15 @@ class PDFService:
         # Formata CNPJ se tiver 14 dígitos
         clean_cnpj = empresa.cnpj.replace(".", "").replace("/", "").replace("-", "")
         formatted_cnpj = f"{clean_cnpj[:2]}.{clean_cnpj[2:5]}.{clean_cnpj[5:8]}/{clean_cnpj[8:12]}-{clean_cnpj[12:]}" if len(clean_cnpj) == 14 else empresa.cnpj
-        pdf.cell(0, 6, f"CNPJ: {formatted_cnpj}", ln=True)
+        pdf.cell(0, 6, f"CNPJ: {formatted_cnpj}")
+        pdf.ln(6)
         pdf.ln(10)
         
         # Título do Documento
         pdf.set_font("helvetica", "B", 14)
         pdf.set_text_color(0, 0, 0)
-        pdf.cell(0, 10, "COMPROVANTE DE TRANSMISSÃO ESOCIAL", ln=True, align="C")
+        pdf.cell(0, 10, "COMPROVANTE DE TRANSMISSÃO ESOCIAL", align="C")
+        pdf.ln(10)
         pdf.ln(5)
 
     def generate_lote_pdf(self, lote: Lote) -> bytes:
@@ -79,21 +81,25 @@ class PDFService:
         
         # Dados do Lote
         pdf.set_font("helvetica", "B", 11)
-        pdf.cell(0, 8, "DADOS DO LOTE", ln=True)
+        pdf.cell(0, 8, "DADOS DO LOTE")
+        pdf.ln(8)
         pdf.set_font("helvetica", "", 10)
         
-        data_transmissao = lote.created_at.strftime("%d/%m/%Y %H:%M")
+        data_transmissao = lote.created_at.strftime("%d/%m/%Y %H:%M") if lote.created_at else "---"
         pdf.cell(90, 7, f"Protocolo: {lote.protocolo or 'N/A'}", border="B")
-        pdf.cell(0, 7, f"Data de Envio: {data_transmissao}", border="B", ln=True)
+        pdf.cell(0, 7, f"Data de Envio: {data_transmissao}", border="B")
+        pdf.ln(7)
         
         ambiente_str = "PRODUÇÃO" if lote.ambiente == Ambiente.PRODUCTION else "HOMOLOGAÇÃO (TESTES)"
         pdf.cell(90, 7, f"Ambiente: {ambiente_str}", border="B")
-        pdf.cell(0, 7, f"Status: {lote.status}", border="B", ln=True)
+        pdf.cell(0, 7, f"Status: {str(lote.status.value if hasattr(lote.status, 'value') else lote.status)}", border="B")
+        pdf.ln(7)
         pdf.ln(10)
         
         # Tabela de Eventos
         pdf.set_font("helvetica", "B", 11)
-        pdf.cell(0, 8, "EVENTOS TRANSMITIDOS", ln=True)
+        pdf.cell(0, 8, "EVENTOS TRANSMITIDOS")
+        pdf.ln(8)
         
         cols = [("Tipo", 25), ("ID do Evento", 85), ("Status", 30), ("Recibo", 50)]
         pdf.create_table_header(cols)
@@ -102,10 +108,13 @@ class PDFService:
         pdf.set_text_color(0, 0, 0)
         
         for evt in lote.eventos:
-            pdf.cell(25, 7, evt.tipo, border=1, align="C")
-            pdf.cell(85, 7, (evt.evento_id_esocial or "")[:40], border=1)
-            pdf.cell(30, 7, evt.status, border=1, align="C")
-            pdf.cell(50, 7, evt.nr_recibo or "---", border=1, align="C")
+            tipo_val = str(evt.tipo.value if hasattr(evt.tipo, 'value') else evt.tipo)
+            status_val = str(evt.status.value if hasattr(evt.status, 'value') else evt.status)
+            
+            pdf.cell(25, 7, tipo_val, border=1, align="C")
+            pdf.cell(85, 7, str(evt.evento_id_esocial or "")[:40], border=1)
+            pdf.cell(30, 7, status_val, border=1, align="C")
+            pdf.cell(50, 7, str(evt.nr_recibo or "---"), border=1, align="C")
             pdf.ln()
             
             # Se houver erro, detalha abaixo do evento
@@ -116,7 +125,7 @@ class PDFService:
                     msg = f"Erro [{oc.get('codigo')}]: {oc.get('descricao')}"
                     pdf.multi_cell(0, 5, msg, border=1, fill=True)
         
-        return pdf.output()
+        return bytes(pdf.output())
 
     def generate_evento_pdf(self, evento: Evento) -> bytes:
         """Gera um PDF para um único evento específico."""
@@ -126,13 +135,19 @@ class PDFService:
         self._setup_document(pdf, empresa)
         
         pdf.set_font("helvetica", "B", 11)
-        pdf.cell(0, 8, "DETALHES DO EVENTO", ln=True)
+        pdf.cell(0, 8, "DETALHES DO EVENTO")
+        pdf.ln(8)
         pdf.set_font("helvetica", "", 10)
         
-        pdf.cell(100, 7, f"Tipo de Evento: {evento.tipo}", border="B")
-        pdf.cell(0, 7, f"Status: {evento.status}", border="B", ln=True)
-        pdf.cell(100, 7, f"ID eSocial: {evento.evento_id_esocial}", border="B")
-        pdf.cell(0, 7, f"Recibo: {evento.nr_recibo or 'PENDENTE'}", border="B", ln=True)
+        tipo_val = str(evento.tipo.value if hasattr(evento.tipo, 'value') else evento.tipo)
+        status_val = str(evento.status.value if hasattr(evento.status, 'value') else evento.status)
+
+        pdf.cell(100, 7, f"Tipo de Evento: {tipo_val}", border="B")
+        pdf.cell(0, 7, f"Status: {status_val}", border="B")
+        pdf.ln(7)
+        pdf.cell(100, 7, f"ID eSocial: {evento.evento_id_esocial or '---'}", border="B")
+        pdf.cell(0, 7, f"Recibo: {evento.nr_recibo or 'PENDENTE'}", border="B")
+        pdf.ln(7)
         pdf.ln(10)
         
         if evento.status == "ERROR" and evento.ocorrencias_json:
@@ -147,6 +162,6 @@ class PDFService:
                 pdf.set_fill_color(250, 250, 250)
                 pdf.multi_cell(0, 6, f"• {oc.get('descricao')} (Código: {oc.get('codigo')})", border=1, fill=True)
         
-        return pdf.output()
+        return bytes(pdf.output())
 
 pdf_service = PDFService()
