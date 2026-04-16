@@ -47,10 +47,12 @@ app.add_middleware(
 from api.health import router as health_router
 from api.empresas import router as empresas_router
 from api.lotes import router as lotes_router
+from api.dashboard import router as dashboard_router
 
 app.include_router(health_router, prefix="/api", tags=["Health"])
 app.include_router(empresas_router, prefix="/api", tags=["Empresas"])
 app.include_router(lotes_router, prefix="/api", tags=["Lotes"])
+app.include_router(dashboard_router, prefix="/api", tags=["Dashboard"])
 
 # --- Frontend SPA Integration ---
 FRONTEND_DIST = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")

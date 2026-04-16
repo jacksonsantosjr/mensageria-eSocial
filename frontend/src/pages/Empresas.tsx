@@ -163,7 +163,7 @@ export default function Empresas() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-tight ${emp.ativo ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                      <span className={`px-3 py-1 rounded-lg text-[10px] uppercase font-black tracking-tight ${emp.ativo ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                         {emp.ativo ? 'ATIVO' : 'INATIVO'}
                       </span>
                     </td>
@@ -207,7 +207,7 @@ export default function Empresas() {
                     placeholder="00.000.000/0000-00"
                     className={`w-full p-3 border border-glass-border rounded-lg outline-none font-medium transition ${editingId ? 'bg-black/20 text-app-text/40 cursor-not-allowed' : 'bg-black/5 text-app-text focus:ring-2 focus:ring-primary-500'}`}
                     value={cnpj}
-                    onChange={e => setCnpj(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCnpj(e.target.value)}
                     onBlur={handleCnpjBlur}
                   />
                   {isSearching && <Loader2 className="w-5 h-5 animate-spin text-primary-500 absolute right-3 top-3" />}
@@ -221,7 +221,7 @@ export default function Empresas() {
                   required 
                   className="w-full p-3 border border-glass-border rounded-lg bg-black/10 outline-none font-semibold text-app-text"
                   value={razaoSocial}
-                  onChange={e => setRazaoSocial(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRazaoSocial(e.target.value)}
                   placeholder="Preenchido automaticamente..."
                 />
               </div>
@@ -245,7 +245,7 @@ export default function Empresas() {
                   type="password" 
                   className="w-full p-3 border border-glass-border rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
                   value={senhaCertificado}
-                  onChange={e => setSenhaCertificado(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSenhaCertificado(e.target.value)}
                   placeholder="Obrigatória para assinatura automática"
                 />
               </div>
