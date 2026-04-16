@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLotes, signLote, sendLote, downloadLotePDF, downloadEventoPDF, getLote } from '../services/api';
-import { FileJson, Loader2, Send, PenTool, Download, FileText, Eye, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { FileJson, Loader2, Send, PenTool, Download, FileText, Eye, X } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 import { useState } from 'react';
 
