@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getEmpresas, createEmpresa, getCNPJData } from '../services/api';
+import { getEmpresas, createEmpresa, updateEmpresa, getCNPJData } from '../services/api';
 import { Plus, Loader2, Building2, ShieldCheck, X } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 
@@ -9,6 +9,7 @@ export default function Empresas() {
   const { showAlert } = useAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   
   // States do Formulário
   const [cnpj, setCnpj] = useState('');
@@ -22,14 +23,20 @@ export default function Empresas() {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: any) => createEmpresa(data),
+    mutationFn: (data: any) => {
+      if (editingId) {
+        return updateEmpresa(editingId, data);
+      }
+      return createEmpresa(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['empresas'] });
       setIsModalOpen(false);
       resetForm();
-      showAlert("Empresa Cadastrada", "Os dados da empresa e as configurações do certificado foram salvos com sucesso.", "success");
+      const action = editingId ? "Atualizada" : "Cadastrada";
+      showAlert(`Empresa ${action}`, `Os dados da empresa foram salvos com sucesso.`, "success");
     },
-    onError: (err: any) => showAlert("Erro no Cadastro", `Não foi possível cadastrar a empresa: ${err}`, "error")
+    onError: (err: any) => showAlert("Erro na Operação", `Não foi possível salvar os dados: ${err}`, "error")
   });
 
   const resetForm = () => {
@@ -37,9 +44,20 @@ export default function Empresas() {
     setRazaoSocial('');
     setCertificadoBase64('');
     setSenhaCertificado('');
+    setEditingId(null);
+  };
+
+  const handleEdit = (emp: any) => {
+    setEditingId(emp.id);
+    setCnpj(emp.cnpj);
+    setRazaoSocial(emp.razao_social);
+    setCertificadoBase64(''); // Resetar p/ não mostrar base64 longo
+    setSenhaCertificado('');
+    setIsModalOpen(true);
   };
 
   const handleCnpjBlur = async () => {
+    if (editingId) return; // Não buscar se estiver editando
     const cleanCnpj = cnpj.replace(/\D/g, '');
     if (cleanCnpj.length !== 14) return;
 
@@ -69,13 +87,19 @@ export default function Empresas() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate({
+    const payload: any = {
       cnpj: cnpj.replace(/\D/g, ''),
       razao_social: razaoSocial,
-      cert_base64: certificadoBase64,
-      cert_password: senhaCertificado,
       ativo: true
-    });
+    };
+
+    // Se houver novo certificado, envia. Senão, mantém o que já está no banco.
+    if (certificadoBase64) {
+      payload.cert_base64 = certificadoBase64;
+      payload.cert_password = senhaCertificado;
+    }
+
+    mutation.mutate(payload);
   };
 
   return (
@@ -87,7 +111,7 @@ export default function Empresas() {
               <p className="text-sm text-app-text/60">Cadastre os transmissores autorizados para envio do eSocial.</p>
            </div>
            <button 
-             onClick={() => setIsModalOpen(true)}
+             onClick={() => { resetForm(); setIsModalOpen(true); }}
              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
            >
              <Plus className="w-4 h-4 mr-2" />
@@ -132,7 +156,7 @@ export default function Empresas() {
                       {emp.certificado_a1 ? (
                         <div className="flex items-center text-emerald-500 text-sm font-semibold">
                           <ShieldCheck className="w-4 h-4 mr-1" />
-                          Certificado A1 Configurado
+                          Configurado
                         </div>
                       ) : (
                         <span className="text-app-text/40 text-sm">Sem Certificado</span>
@@ -144,7 +168,12 @@ export default function Empresas() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                       <button className="text-sm text-app-text/40 hover:text-primary-500 font-bold transition">Editar</button>
+                       <button 
+                        onClick={() => handleEdit(emp)}
+                        className="text-sm text-app-text/40 hover:text-primary-500 font-bold transition"
+                       >
+                        Editar
+                       </button>
                     </td>
                   </tr>
                 ))}
@@ -154,12 +183,14 @@ export default function Empresas() {
         )}
       </div>
 
-      {/* Modal de Cadastro */}
+      {/* Modal de Cadastro/Edição */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
           <div className="glass-card w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
-              <h2 className="text-xl font-bold text-app-text">Cadastrar Nova Transmissora</h2>
+              <h2 className="text-xl font-bold text-app-text">
+                {editingId ? 'Editar Transmissora' : 'Cadastrar Nova Transmissora'}
+              </h2>
               <button onClick={() => setIsModalOpen(false)} className="text-app-text/40 hover:text-app-text transition">
                 <X className="w-6 h-6" />
               </button>
@@ -172,8 +203,9 @@ export default function Empresas() {
                   <input 
                     type="text" 
                     required 
+                    readOnly={!!editingId}
                     placeholder="00.000.000/0000-00"
-                    className="w-full p-3 border border-glass-border rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-black/5 font-medium text-app-text transition"
+                    className={`w-full p-3 border border-glass-border rounded-lg outline-none font-medium transition ${editingId ? 'bg-black/20 text-app-text/40 cursor-not-allowed' : 'bg-black/5 text-app-text focus:ring-2 focus:ring-primary-500'}`}
                     value={cnpj}
                     onChange={e => setCnpj(e.target.value)}
                     onBlur={handleCnpjBlur}

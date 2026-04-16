@@ -30,6 +30,16 @@ export const createEmpresa = async (data: any) => {
     return response.data;
 };
 
+export const updateEmpresa = async (id: string, data: any) => {
+    const response = await api.put(`/empresas/${id}`, data);
+    return response.data;
+};
+
+export const deleteEmpresa = async (id: string) => {
+    const response = await api.delete(`/empresas/${id}`);
+    return response.data;
+};
+
 // --- BrasilAPI (Consulta CNPJ) ---
 export const getCNPJData = async (cnpj: string) => {
     // Limpar o CNPJ para manter apenas números

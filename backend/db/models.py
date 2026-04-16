@@ -60,6 +60,11 @@ class Empresa(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+    @property
+    def certificado_a1(self) -> bool:
+        """Indica se a empresa possui certificado configurado."""
+        return bool(self.cert_base64)
+
     # Relacionamentos
     lotes: list["Lote"] = Relationship(back_populates="empresa")
 

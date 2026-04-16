@@ -23,6 +23,7 @@ class EmpresaResponse(BaseModel):
     cnpj: str
     razao_social: str
     nome_fantasia: Optional[str] = None
+    certificado_a1: bool = False
     ativo: bool
     created_at: datetime
     updated_at: datetime
