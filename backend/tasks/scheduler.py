@@ -13,40 +13,24 @@ from db.models import Lote, LoteStatus
 logger = logging.getLogger(__name__)
 scheduler = BackgroundScheduler()
 
+import asyncio
+from services.consult_processor import consult_processor
+
 def poll_pending_protocols():
     """
-    Job periódico: Busca lotes no Supabase com status de transmissão pendente
-    e dispara a consulta ao Web Service do eSocial.
+    Job periódico: Busca lotes no banco e dispara a consulta real ao eSocial.
     """
-    logger.debug("Iniciando ciclo de polling de protocolos...")
+    logger.debug("Iniciando ciclo de polling de protocolos real...")
     
-    with Session(engine) as session:
-        # Busca lotes que foram enviados mas ainda não processados totalmente
-        statement = select(Lote).where(
-            Lote.status.in_([LoteStatus.SENT, LoteStatus.PROCESSING])
-        )
-        lotes_pendentes = session.exec(statement).all()
-        
-        if not lotes_pendentes:
-            return
-
-        logger.info("Encontrados %d lotes para consulta de protocolo.", len(lotes_pendentes))
-        
-        for lote in lotes_pendentes:
-            try:
-                # Aqui entrará a chamada real ao SOAP client na Fase 4
-                # Por enquanto, logamos a intenção de consulta
-                logger.debug("Consultando protocolo %s para o lote %s", lote.protocolo, lote.id)
-                
-                # Mock de incremento de tentativas
-                lote.tentativas_consulta += 1
-                lote.updated_at = datetime.utcnow()
-                session.add(lote)
-                
-            except Exception as e:
-                logger.error("Erro ao consultar lote %s: %s", lote.id, str(e))
-        
-        session.commit()
+    # Como o APScheduler roda funções síncronas em threads, precisamos 
+    # rodar o processador assíncrono dentro de um loop de evento.
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(consult_processor.process_all_pending())
+        loop.close()
+    except Exception as e:
+        logger.error("Erro no ciclo de polling: %s", str(e))
 
 def start_scheduler():
     """Inicia o scheduler com o job de polling configurado."""

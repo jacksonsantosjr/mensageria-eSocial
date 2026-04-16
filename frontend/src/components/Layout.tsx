@@ -1,13 +1,18 @@
+import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileUp, Activity, Inbox, ShieldAlert, Sun, Moon, Settings } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getSystemConfig } from '../services/api';
 import { clsx } from 'clsx';
-import { useState, useEffect } from 'react';
+import { useESocialNotifications } from '../hooks/useESocialNotifications';
+import { ToastContainer } from './ToastContainer';
 
 export function Layout() {
   const location = useLocation();
   const [isDark, setIsDark] = useState(true);
+  
+  // Ativa o observador de notificações global
+  useESocialNotifications();
 
   const { data: config } = useQuery({
     queryKey: ['systemConfig'],
@@ -123,6 +128,7 @@ export function Layout() {
         </div>
       </main>
       
+      <ToastContainer />
     </div>
   );
 }
