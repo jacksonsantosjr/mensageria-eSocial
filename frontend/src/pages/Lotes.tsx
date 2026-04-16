@@ -118,6 +118,9 @@ export default function Lotes() {
                                             disabled={sendMutation.isPending}
                                         >
                                             {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                        </button>
+                                    )}
+
                                     {/* Botão Ver Detalhes */}
                                     <button 
                                         title="Ver Eventos do Lote"
