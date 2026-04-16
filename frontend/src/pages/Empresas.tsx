@@ -112,7 +112,7 @@ export default function Empresas() {
                 {empresas.length === 0 && (
                    <tr><td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium italic">Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.</td></tr>
                 )}
-                {empresas.map((emp: any) => (
+                {Array.isArray(empresas) && empresas.map((emp: any) => (
                   <tr key={emp.id} className="hover:bg-gray-50/80 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">

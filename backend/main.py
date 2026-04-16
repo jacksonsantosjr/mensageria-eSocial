@@ -59,5 +59,9 @@ if os.path.exists(FRONTEND_DIST):
     # Catch-all para Rotas do React SPA (React Router)
     @app.get("/{full_path:path}")
     async def serve_react_app(full_path: str):
+        # Se for uma chamada de API que chegou aqui, é um 404 real, não deve retornar index.html
+        if full_path.startswith("api"):
+            return {"detail": "Not Found"}, 404
+            
         index_path = os.path.join(FRONTEND_DIST, "index.html")
         return FileResponse(index_path)

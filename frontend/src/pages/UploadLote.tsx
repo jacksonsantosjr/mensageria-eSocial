@@ -98,7 +98,7 @@ export default function UploadLote() {
               onChange={e => setEmpresaId(e.target.value)}
             >
               <option value="">-- Selecione a empresa --</option>
-              {empresas.map((e:any) => <option key={e.id} value={e.id}>{e.razao_social} ({e.cnpj})</option>)}
+              {Array.isArray(empresas) && empresas.map((e:any) => <option key={e.id} value={e.id}>{e.razao_social} ({e.cnpj})</option>)}
             </select>
          )}
       </div>
