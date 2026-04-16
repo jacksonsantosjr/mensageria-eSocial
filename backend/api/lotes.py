@@ -5,15 +5,16 @@ Endpoints para upload de XML, listagem e consulta no banco de dados Supabase.
 import uuid
 import logging
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Depends, status, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Depends, status, BackgroundTasks, Response
 from typing import Optional
 from sqlmodel import Session, select, desc
 
 from db.session import get_session
-from db.models import Lote, LoteStatus, Empresa, Ambiente
+from db.models import Lote, LoteStatus, Empresa, Ambiente, Evento
 from schemas.lote import LoteResponse, LoteDetalheResponse, DashboardResumo
 from services.storage_service import storage_service
 from services.batch_processor import BatchProcessor
+from services.pdf_service import pdf_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

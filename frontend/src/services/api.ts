@@ -40,6 +40,15 @@ export const deleteEmpresa = async (id: string) => {
     return response.data;
 };
 
+export const uploadLogo = async (id: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post(`/empresas/${id}/logo`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+};
+
 // --- BrasilAPI (Consulta CNPJ) ---
 export const getCNPJData = async (cnpj: string) => {
     // Limpar o CNPJ para manter apenas números
@@ -74,9 +83,26 @@ export const sendLote = async (loteId: string) => {
     return response.data;
 };
 
-export const getDashboardResumo = async () => {
-    const response = await api.get('/dashboard/resumo');
-    return response.data;
+export const downloadLotePDF = async (id: string, fileName?: string) => {
+    const response = await api.get(`/lotes/${id}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName || `recibo_lote_${id.substring(0,8)}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+};
+
+export const downloadEventoPDF = async (id: string, fileName?: string) => {
+    const response = await api.get(`/eventos/${id}/pdf`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName || `recibo_evento_${id.substring(0,8)}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 };
 
 // --- Configurações ---

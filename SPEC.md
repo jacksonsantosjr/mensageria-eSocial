@@ -1,46 +1,61 @@
-# Spec-Driven Development (SDD) - eSocial Mensageria
+# SPEC-001: Exportação de Recibos eSocial em PDF
 
-## 1. Visão Geral
-Sistema independente para recebimento, validação, assinatura e transmissão de eventos XML do eSocial gerados (por ERP como Totvs RM) ao Web Service do governo federal usando certificados A1 (arquivos `.pfx`) e A3 (Token/Cartão Smartcard).
+## Overview
+Este documento especifica a implementação da funcionalidade de geração e exportação de comprovantes de entrega do eSocial em formato PDF. O objetivo é fornecer ao usuário um documento oficial, elegante e corporativo que comprove a transmissão dos eventos para o governo.
 
-## 2. Objetivos e Não-Objetivos
+## Goals
+- Gerar PDFs profissionais com layout minimalista e autoridade.
+- Suportar exportação consolidada (Lote completo).
+- Suportar exportação individual (Evento específico).
+- Incluir metadados de auditoria (Data/Hora de geração).
 
-### Objetivos (Goals)
-- Processar os eventos XML de modo independente.
-- Assinar eventos via XMLDSIG com suporte para certificados do tipo A1 e A3 (e-CNPJ).
-- Realizar validação via XSD antes de qualquer transmissão.
-- Consumir o Web Service SOAP do eSocial utilizando mTLS bidirecional.
-- Manter o fluxo assíncrono padrão do governo: **Envio -> Protocolo -> Consulta Assíncrona -> Resultado**.
-- Prover ambiente visual e rastreável de pendências, aprovações e lotes.
+## Non-Goals
+- Edição do conteúdo do PDF após a geração.
+- Envio automático do PDF por e-mail (fora de escopo desta task).
 
-### Não-Objetivos (Non-Goals)
-- Não será um ERP gerador das folhas de pagamento ou cálculos.
-- Não substitui o banco de dados nativo do sistema Totvs; ele atua puramente como "Mensageria e Auditoria de Envio".
+## User Stories
+- **Como usuário**, quero baixar o comprovante de um lote inteiro para arquivamento mensal.
+- **Como usuário**, quero baixar o recibo de um evento específico para enviar a um cliente ou departamento.
+- **Como gestor**, quero que o PDF tenha uma identidade visual limpa e contenha o CNPJ e Protocolo visíveis.
 
-## 3. Requisitos Funcionais
-1. **Suporte a Múltiplos Certificados:** O sistema DEVE permitir a validação e transmissão de dados através de certificados A1 e também suportar integração/identificação futura com hardware A3.
-2. **Validador:** O sistema DEVE validar o lote contra os schemas do eSocial antes do envio e barrar o processamento antecipado com erro útil (`ValidationResult`).
-3. **Assinador:** O sistema DEVE aplicar a assinatura `enveloped` em cada evento e no envelope global obrigatoriamente.
-4. **Mensageria Assíncrona:** O sistema DEVE implementar uma fila de repetição (`APScheduler` / `FastAPI BackgroundTasks`) efetuando `polling` até receber os códigos finais de `200` (Processado com Sucesso) ou falhas (`401`, `422`, `500`).
-5. **Dashboard Operacional:** O sistema DEVE dispor de interface gráfica (React/Vite) para conferência detalhada e submissão manual do status e erros (`<ocorrencia>`) devolvidos.
+## Functional Requirements
 
-## 4. Requisitos Não Funcionais
-1. **Desempenho:** Parsing e assinatura XML devem ser suportados rapidamente usando `lxml` + `signxml`.
-2. **Segurança:** Senhas de certificados não trafegam e devem ser inseridas sob demanda nas execuções corporativas, sem comitar credenciais no código-fonte.
+### 1. Geração de PDF (Backend)
+- Utilização da biblioteca `fpdf2`.
+- **Layout de Cabeçalho**: Título "Comprovante de Transmissão eSocial", Logotipo da Empresa (se houver) ou Iniciais Estilizadas, e Dados da Empresa (Nome, CNPJ).
+- **Layout do Corpo**:
+    - Tabela de dados de transmissão: Protocolo, Ambiente (Homologação/Produção), Data de Envio.
+    - Tabela de Eventos: Tipo (S-1000, etc), ID do Evento, Status, Número do Recibo.
+    - **Seção de Erros**: Caso o status seja `ERROR`, exibir tabela de ocorrências com código e descrição da rejeição.
+- **Layout de Rodapé**: Texto "Documento gerado automaticamente pelo sistema de Mensageria eSocial em [DATA] às [HORA]".
 
-## 5. Estado Atual vs Estado Alvo (Target State)
-- **Estado Atual:** 
-  Foram gerasadas as cascas principais via scripts de inicialização descritos no `eSocial_Mensageria_Guia_Completo.docx`. O módulo XSD e Validador, junto com testes iniciais, existem. As pendências de rede (dependências do NPM e PIP) estão sendo baixadas.
-- **Estado Alvo:**
-  Faltam implementar completamente o suporte aos Web Services dinâmicos SOAP (eSocial) em modo Produção vs Homologação, integrar o fluxo via Celery real, subir as rotas finais Rest do backend, configurar UI para consultar lotes e injetar a inteligência A3.
+### 2. Gestão de Identidade Visual (Logo)
+- Implementação de upload de imagem (PNG/JPG/WEBP) no cadastro da empresa.
+- Armazenamento seguro via `StorageService`.
 
-## 6. Divisão de Tarefas / Roadmap
-- **[x] Fase 0:** Infraestrutura Básica (Repo Clonado).
-- **[x] Fase 1:** Scaffold FastAPI Backend + ORM Models.
-- **[x] Fase 2:** Módulos LXML Validador XSD e Assinador.
-- **[ ] Fase 3:** SOAP Client (zeep) + Integrações Assíncronas (APScheduler).
-- **[ ] Fase 4:** Estruturação das Telas do Frontend React + Vite.
-- **[ ] Fase 5:** Testes ponta-a-ponta, refino do uso A1/A3 e deploys.
+### 3. API Endpoints
+- `GET /api/lotes/{id}/pdf`: Gera PDF consolidado.
+- `GET /api/eventos/{id}/pdf`: Gera PDF de evento único.
+- `POST /api/empresas/{id}/logo`: Upload do logotipo da empresa.
 
-## 7. Questões em Aberto / Pendências
-*Como o A3 exige drivers PKCS#11 no sistema hospedeiro, será necessário validar se o backend rodará em servidor / máquina local do cliente ou via cloud com redirecionamento de porta USB.*
+### 3. Interface (Frontend)
+- Botão "Baixar Comprovante" na lista de Lotes.
+- Botão de ícone (PDF) na lista de Eventos de um lote.
+- Feedback de processamento (Spinner) durante a geração.
+
+## Data Model / API Contract
+Não há alterações no banco de dados. Os dados serão extraídos das tabelas `Lote`, `Evento` e `Empresa` existentes.
+
+## Edge Cases & Error Handling
+- **Recibo Inexistente**: Se o evento não estiver processado, o PDF exibirá "Pendente de Processamento" no campo de recibo.
+- **Falha na Geração**: O backend deve retornar 500 com mensagem clara caso a lib `fpdf2` falhe.
+
+## Task Breakdown
+1. **Configuração**: Instalar `fpdf2` e configurar fontes básicas.
+2. **Serviço PDF**: Criar `backend/services/pdf_service.py` com o layout base.
+3. **Endpoints**: Implementar as rotas no FastAPI.
+4. **UI Lotes**: Adicionar botões de download na página `Lotes.tsx`.
+5. **UI Eventos**: Implementar visualização/download na listagem de eventos.
+
+## Changelog
+- 2026-04-16: Criação inicial da SPEC.

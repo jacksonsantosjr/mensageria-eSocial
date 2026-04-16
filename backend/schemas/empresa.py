@@ -25,6 +25,7 @@ class EmpresaResponse(BaseModel):
     nome_fantasia: Optional[str] = None
     certificado_a1: bool = False
     ativo: bool
+    logo_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

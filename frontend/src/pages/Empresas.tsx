@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getEmpresas, createEmpresa, updateEmpresa, getCNPJData } from '../services/api';
-import { Plus, Loader2, Building2, ShieldCheck, X } from 'lucide-react';
+import { getEmpresas, createEmpresa, updateEmpresa, getCNPJData, uploadLogo } from '../services/api';
+import { Plus, Loader2, Building2, ShieldCheck, X, Image as ImageIcon, Camera } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
 
 export default function Empresas() {
@@ -10,6 +10,28 @@ export default function Empresas() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState<string | null>(null);
+  
+  const logoMutation = useMutation({
+    mutationFn: ({ id, file }: { id: string, file: File }) => uploadLogo(id, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['empresas'] });
+      showAlert("Logo Atualizado", "O logotipo da empresa foi salvo com sucesso.", "success");
+      setIsUploadingLogo(null);
+    },
+    onError: (err: any) => {
+      showAlert("Erro no Upload", `Não foi possível salvar o logo: ${err}`, "error");
+      setIsUploadingLogo(null);
+    }
+  });
+
+  const handleLogoUpload = (empId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIsUploadingLogo(empId);
+      logoMutation.mutate({ id: empId, file });
+    }
+  };
   
   // States do Formulário
   const [cnpj, setCnpj] = useState('');
@@ -143,8 +165,28 @@ export default function Empresas() {
                   <tr key={emp.id} className="hover:bg-black/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-black/10 rounded-xl text-app-text/40">
-                          <Building2 className="w-5 h-5" />
+                        <div className="relative group p-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl">
+                          <label className="cursor-pointer block">
+                            <div className="w-12 h-12 rounded-[10px] overflow-hidden bg-black/40 flex items-center justify-center relative">
+                              {isUploadingLogo === emp.id ? (
+                                <Loader2 className="w-5 h-5 text-primary-500 animate-spin" />
+                              ) : emp.logo_url ? (
+                                <img src={emp.logo_url} alt="Logo" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                              ) : (
+                                <Building2 className="w-6 h-6 text-app-text/30 group-hover:opacity-0 transition-opacity" />
+                              )}
+                              
+                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Camera className="w-5 h-5 text-white" />
+                              </div>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={(e) => handleLogoUpload(emp.id, e)}
+                            />
+                          </label>
                         </div>
                         <div>
                           <p className="font-bold text-app-text">{emp.razao_social}</p>

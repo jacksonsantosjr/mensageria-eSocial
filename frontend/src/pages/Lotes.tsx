@@ -1,11 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLotes, signLote, sendLote } from '../services/api';
-import { FileJson, Loader2, Send, PenTool, Download } from 'lucide-react';
+import { getLotes, signLote, sendLote, downloadLotePDF, downloadEventoPDF } from '../services/api';
+import { FileJson, Loader2, Send, PenTool, Download, FileText, Eye, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
+import { useState } from 'react';
 
 export default function Lotes() {
   const queryClient = useQueryClient();
   const { showAlert } = useAlert();
+  const [selectedLote, setSelectedLote] = useState<any | null>(null);
 
   const { data: lotes = [], isLoading: loadingLotes } = useQuery({ 
     queryKey: ['lotes'], 
@@ -116,10 +118,27 @@ export default function Lotes() {
                                             disabled={sendMutation.isPending}
                                         >
                                             {sendMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                    {/* Botão Ver Detalhes */}
+                                    <button 
+                                        title="Ver Eventos do Lote"
+                                        className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20"
+                                        onClick={() => setSelectedLote(l)}
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                    </button>
+
+                                    {/* Botão PDF Lote */}
+                                    {(l.status === 'SENT' || l.status === 'PROCESSED' || l.status === 'ERROR') && (
+                                        <button 
+                                            title="Baixar Comprovante Lote (PDF)"
+                                            className="p-2 bg-amber-500/10 text-amber-500 rounded-lg hover:bg-amber-500/20 transition border border-amber-500/20"
+                                            onClick={() => downloadLotePDF(l.id)}
+                                        >
+                                            <FileText className="w-4 h-4" />
                                         </button>
                                     )}
 
-                                    {/* Botão Download */}
+                                    {/* Botão Download XML */}
                                     <button 
                                         title="Baixar XML Original"
                                         className="p-2 bg-black/5 text-app-text/40 rounded-lg hover:bg-black/10 transition border border-glass-border"
@@ -135,6 +154,78 @@ export default function Lotes() {
            </div>
          )}
       </div>
+
+      {/* Modal de Eventos */}
+      {selectedLote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <div className="glass-card w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
+              <div>
+                <h2 className="text-xl font-bold text-app-text">Detalhes do Lote</h2>
+                <p className="text-sm text-app-text/40 font-mono">{selectedLote.id}</p>
+              </div>
+              <button onClick={() => setSelectedLote(null)} className="text-app-text/40 hover:text-app-text transition">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <table className="w-full text-left">
+                    <thead className="text-[10px] uppercase font-black tracking-widest text-app-text/40 border-b border-glass-border">
+                        <tr>
+                            <th className="py-3 px-2">Tipo</th>
+                            <th className="py-3 px-2">ID Evento</th>
+                            <th className="py-3 px-2 text-center">Status</th>
+                            <th className="py-3 px-10 text-right">Recibo / Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-glass-border">
+                        {selectedLote.eventos?.map((evt: any) => (
+                            <tr key={evt.id} className="hover:bg-white/5 transition-colors">
+                                <td className="py-4 px-2 font-bold text-primary-400">{evt.tipo}</td>
+                                <td className="py-4 px-2 text-xs font-mono text-app-text/60">{(evt.evento_id_esocial || '').substring(0, 30)}...</td>
+                                <td className="py-4 px-2">
+                                    <div className="flex justify-center">
+                                        {evt.status === 'PROCESSED' ? (
+                                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                        ) : evt.status === 'ERROR' ? (
+                                            <AlertCircle className="w-5 h-5 text-red-500" />
+                                        ) : (
+                                            <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="py-4 px-0 pr-2">
+                                    <div className="flex items-center justify-end gap-3">
+                                        <span className="text-xs font-mono text-app-text/40">{evt.nr_recibo || '---'}</span>
+                                        {(evt.status === 'PROCESSED' || evt.status === 'ERROR') && (
+                                            <button 
+                                                title="Baixar Recibo Individual (PDF)"
+                                                onClick={() => downloadEventoPDF(evt.id)}
+                                                className="p-1.5 bg-amber-500/10 text-amber-500 rounded hover:bg-amber-500/20 border border-amber-500/20"
+                                            >
+                                                <FileText className="w-3.5 h-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="p-6 bg-black/10 border-t border-glass-border flex justify-end">
+                <button 
+                  onClick={() => setSelectedLote(null)}
+                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-app-text/60 rounded-lg font-bold transition"
+                >
+                  Fechar
+                </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -56,6 +56,7 @@ class Empresa(SQLModel, table=True):
     nome_fantasia: Optional[str] = Field(default=None, max_length=200)
     cert_base64: Optional[str] = Field(default=None)
     cert_password: Optional[str] = Field(default=None, max_length=200)
+    logo_path: Optional[str] = Field(default=None)
     ativo: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
