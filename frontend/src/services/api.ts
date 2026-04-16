@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // A URL base aponta para o backend FastAPI (Hugging Face redireciona via proxy ou porta local)
 export const api = axios.create({
+  // @ts-ignore
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   headers: {
     'Content-Type': 'application/json'

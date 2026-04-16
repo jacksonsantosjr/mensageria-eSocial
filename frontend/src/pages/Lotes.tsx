@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLotes, createLote, getEmpresas, signLote, sendLote } from '../services/api';
-import { FileJson, Upload, CheckCircle, AlertCircle, Clock, Loader2, Send, PenTool, Download } from 'lucide-react';
+import { FileJson, Upload, CheckCircle, Loader2, Send, PenTool, Download } from 'lucide-react';
 
 export default function Lotes() {
   const queryClient = useQueryClient();
