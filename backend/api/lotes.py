@@ -184,3 +184,42 @@ async def enviar_lote(lote_id: uuid.UUID, session: Session = Depends(get_session
         logger.error("Erro ao enviar lote: %s", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/lotes/{lote_id}/pdf")
+async def download_lote_pdf(lote_id: uuid.UUID, session: Session = Depends(get_session)):
+    """Gera e retorna o comprovante PDF de um lote."""
+    lote = session.get(Lote, lote_id)
+    if not lote:
+        raise HTTPException(status_code=404, detail="Lote não encontrado.")
+    
+    try:
+        pdf_bytes = pdf_service.generate_lote_pdf(lote)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="recibo_lote_{str(lote_id)[:8]}.pdf"'
+            }
+        )
+    except Exception as e:
+        logger.error("Erro ao gerar PDF do lote %s: %s", lote_id, str(e))
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar PDF: {e}")
+
+@router.get("/eventos/{evento_id}/pdf")
+async def download_evento_pdf(evento_id: uuid.UUID, session: Session = Depends(get_session)):
+    """Gera e retorna o comprovante PDF de um evento individual."""
+    evento = session.exec(select(Evento).where(Evento.id == evento_id)).first()
+    if not evento:
+        raise HTTPException(status_code=404, detail="Evento não encontrado.")
+    
+    try:
+        pdf_bytes = pdf_service.generate_evento_pdf(evento)
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="recibo_evento_{str(evento_id)[:8]}.pdf"'
+            }
+        )
+    except Exception as e:
+        logger.error("Erro ao gerar PDF do evento %s: %s", evento_id, str(e))
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar PDF: {e}")
