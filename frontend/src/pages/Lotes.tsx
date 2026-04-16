@@ -64,38 +64,6 @@ export default function Lotes() {
 
   return (
     <div className="space-y-6">
-      
-      {/* Seleção de Empresa */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col">
-         <h3 className="text-md font-semibold text-gray-700 mb-3">Empresa Transmissora</h3>
-         {loadingEmpresas ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (
-            <select
-              className="p-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50 font-medium"
-              value={empresaId} 
-              onChange={e => setEmpresaId(e.target.value)}
-            >
-              <option value="">-- Selecione uma empresa pré-cadastrada --</option>
-              {empresas.map((e:any) => <option key={e.id} value={e.id}>{e.razao_social} ({e.cnpj})</option>)}
-            </select>
-         )}
-      </div>
-
-      {/* Area de Upload */}
-      <div 
-         className={`bg-white p-6 rounded-xl shadow-sm flex flex-col items-center justify-center border-dashed border-2 py-12 transition cursor-pointer
-           ${mutation.isPending ? 'bg-gray-100 border-gray-300' : 'bg-gray-50/50 hover:bg-gray-50 border-gray-300'}`}
-         onClick={() => fileInputRef.current?.click()}
-      >
-        <input type="file" ref={fileInputRef} className="hidden" accept=".xml" onChange={handleFileChange} disabled={mutation.isPending} />
-        {mutation.isPending ? (
-           <Loader2 className="w-12 h-12 text-primary-500 animate-spin mb-3" />
-        ) : (
-           <Upload className="w-10 h-10 text-primary-400 mb-3" />
-        )}
-        <p className="text-gray-700 font-semibold text-lg">Clique para enviar o XML do Lote</p>
-        <p className="text-gray-500 text-sm mt-1">S-1.3 (Eventos de Tabela, Não Periódicos ou Periódicos)</p>
-      </div>
-
       {/* Histórico e Ações */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
          <div className="p-6 border-b border-gray-200 flex justify-between items-center">

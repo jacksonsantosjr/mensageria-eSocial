@@ -1,10 +1,9 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
-
-// Stubs for next modules
-const Upload = () => <div className="glass-panel p-12 text-center text-slate-400">Página de Upload em Construção. Arraste e solte o Lote XML.</div>;
-const LotesList = () => <div className="glass-panel p-12 text-center text-slate-400">Listagem de Eventos e Lotes.</div>;
+import Empresas from './pages/Empresas';
+import Lotes from './pages/Lotes';
+import UploadLote from './pages/UploadLote';
 
 export default function App() {
   return (
@@ -12,8 +11,12 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/events" element={<LotesList />} />
+          <Route path="/upload" element={<UploadLote />} />
+          <Route path="/lotes" element={<Lotes />} />
+          <Route path="/configuracoes" element={<Empresas />} />
+          
+          {/* Fallback para home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

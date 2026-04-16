@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileUp, Activity, Inbox, ShieldAlert, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, FileUp, Activity, Inbox, ShieldAlert, Sun, Moon, Settings } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useState, useEffect } from 'react';
 
@@ -21,7 +21,8 @@ export function Layout() {
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Upload Lote', path: '/upload', icon: FileUp },
-    { name: 'Meus Lotes', path: '/events', icon: Inbox },
+    { name: 'Meus Lotes', path: '/lotes', icon: Inbox },
+    { name: 'Configurações', path: '/configuracoes', icon: Settings },
   ];
 
   const isProd = false;

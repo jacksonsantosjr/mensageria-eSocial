@@ -25,6 +25,19 @@ export const getEmpresas = async () => {
     return response.data;
 };
 
+export const createEmpresa = async (data: any) => {
+    const response = await api.post('/empresas', data);
+    return response.data;
+};
+
+// --- BrasilAPI (Consulta CNPJ) ---
+export const getCNPJData = async (cnpj: string) => {
+    // Limpar o CNPJ para manter apenas números
+    const cleanCnpj = cnpj.replace(/\D/g, '');
+    const response = await axios.get(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`);
+    return response.data;
+};
+
 // --- Lotes ---
 export const getLotes = async () => {
     const response = await api.get('/lotes');
