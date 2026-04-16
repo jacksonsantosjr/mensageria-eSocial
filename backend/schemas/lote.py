@@ -1,22 +1,28 @@
 """Schemas Pydantic de Lote e Evento."""
-from pydantic import BaseModel
+import uuid
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 class LoteResponse(BaseModel):
-    id: str
-    empresa_id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    empresa_id: uuid.UUID
     protocolo: Optional[str] = None
     status: str
     ambiente: str
-    total_eventos: int
-    eventos_sucesso: int
-    eventos_erro: int
-    created_at: str
-    updated_at: str
+    total_eventos: int = 0
+    eventos_sucesso: int = 0
+    eventos_erro: int = 0
+    created_at: datetime
+    updated_at: datetime
 
 class EventoResponse(BaseModel):
-    id: str
-    lote_id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    lote_id: uuid.UUID
     evento_id_esocial: Optional[str] = None
     tipo: Optional[str] = None
     status: str
@@ -25,8 +31,8 @@ class EventoResponse(BaseModel):
     desc_resposta: Optional[str] = None
     ocorrencias_json: Optional[dict] = None
     validation_errors: Optional[dict] = None
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
 class LoteDetalheResponse(LoteResponse):
     eventos: list[EventoResponse] = []
