@@ -22,17 +22,28 @@ async def listar_empresas(session: Session = Depends(get_session)):
 @router.post("/empresas", response_model=EmpresaResponse, status_code=status.HTTP_201_CREATED)
 async def criar_empresa(empresa_in: EmpresaCreate, session: Session = Depends(get_session)):
     """Cadastra uma nova empresa no Supabase."""
-    # Verificar se CNPJ já existe
-    statement = select(Empresa).where(Empresa.cnpj == empresa_in.cnpj)
-    existing = session.exec(statement).first()
-    if existing:
-        raise HTTPException(status_code=409, detail=f"CNPJ {empresa_in.cnpj} já cadastrado.")
-    
-    db_empresa = Empresa.model_validate(empresa_in)
-    session.add(db_empresa)
-    session.commit()
-    session.refresh(db_empresa)
-    return db_empresa
+    try:
+        # Verificar se CNPJ já existe
+        statement = select(Empresa).where(Empresa.cnpj == empresa_in.cnpj)
+        existing = session.exec(statement).first()
+        if existing:
+            raise HTTPException(status_code=409, detail=f"CNPJ {empresa_in.cnpj} já cadastrado.")
+        
+        db_empresa = Empresa.model_validate(empresa_in)
+        session.add(db_empresa)
+        session.commit()
+        session.refresh(db_empresa)
+        return db_empresa
+    except HTTPException:
+        raise
+    except Exception as e:
+        session.rollback()
+        # Captura o erro real e envia no detalhe para diagnóstico no frontend
+        error_msg = str(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro de Banco de Dados: {error_msg}"
+        )
 
 @router.get("/empresas/{empresa_id}", response_model=EmpresaResponse)
 async def obter_empresa(empresa_id: uuid.UUID, session: Session = Depends(get_session)):

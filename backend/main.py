@@ -14,12 +14,14 @@ from fastapi.responses import FileResponse
 import os
 
 from core.config import settings
+from db.session import init_db
 from tasks.scheduler import start_scheduler, shutdown_scheduler
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Gerencia o ciclo de vida da aplicação: startup e shutdown."""
+    init_db() # Garante que as tabelas existam
     start_scheduler()
     yield
     shutdown_scheduler()

@@ -19,8 +19,7 @@ engine = create_engine(
 
 def init_db():
     """Cria as tabelas no banco de dados (se nao existirem)."""
-    # SQLModel.metadata.create_all(engine) # Já criamos via SQL Migrations, mas pode ser útil como backup
-    pass
+    SQLModel.metadata.create_all(engine)
 
 def get_session():
     """Dependency para injeção de sessão nos endpoints do FastAPI."""

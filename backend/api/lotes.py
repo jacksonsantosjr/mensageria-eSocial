@@ -5,7 +5,7 @@ Endpoints para upload de XML, listagem e consulta no banco de dados Supabase.
 import uuid
 import logging
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Depends, status
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query, Depends, status, BackgroundTasks
 from typing import Optional
 from sqlmodel import Session, select, desc
 
@@ -21,6 +21,7 @@ processor = BatchProcessor()
 
 @router.post("/lotes/upload", response_model=LoteResponse, status_code=status.HTTP_201_CREATED)
 async def upload_lote(
+    background_tasks: BackgroundTasks,
     empresa_id: uuid.UUID = Query(..., description="ID da empresa emissora"),
     ambiente: Ambiente = Query(Ambiente.HOMOLOGATION),
     file: UploadFile = File(...),
@@ -49,14 +50,29 @@ async def upload_lote(
         logger.error("Falha ao salvar no Storage: %s", str(e))
         raise HTTPException(status_code=500, detail="Erro ao persistir arquivo no servidor.")
 
+    # 3. Criação do Registro no Banco (Metadados)
+    db_lote = Lote(
+        id=lote_id,
+        empresa_id=empresa_id,
+        xml_original=xml_url,
+        status=LoteStatus.VALIDATING,
+        ambiente=ambiente,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+
     session.add(db_lote)
     session.commit()
     session.refresh(db_lote)
 
     # 4. Processamento Assíncrono (Extração e Assinatura Híbrida)
-    # Em produção, isso seria enviado para uma fila (Celery/RabbitMQ)
-    # Aqui executamos após o commit para garantir que o Lote existe no DB
-    await processor.process_lote_upload(content.decode('utf-8', errors='ignore'), db_lote, session)
+    # Usamos BackgroundTasks para não bloquear a resposta da API e evitar timeouts
+    background_tasks.add_task(
+        processor.process_lote_upload, 
+        content.decode('utf-8', errors='ignore'), 
+        db_lote, 
+        session
+    )
     
     return db_lote
 

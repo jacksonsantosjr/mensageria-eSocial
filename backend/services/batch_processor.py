@@ -80,17 +80,27 @@ class BatchProcessor:
     async def _sign_lote_a1(self, lote_db: Lote, db_events: list, empresa: Empresa, session: Session):
         """Assina todos os eventos e o lote usando o certificado A1 da empresa."""
         try:
-            # Carrega certificado
+            # 1. Carrega certificado
             cert_pem, key_pem = self.signer.load_pfx(empresa.cert_base64, empresa.cert_password)
+            logger.info("Certificado carregado com sucesso para a empresa %s", empresa.id)
             
-            # TODO: Reconstruir lote assinado
-            # Por brevidade nesta fase, vamos apenas marcar como assinado.
-            # No envio real (Fase 4), assinaremos cada fragmento XML antes de embrulhar no SOAP.
-            
+            # 2. Assina cada evento individualmente
             for evt_obj, raw_xml in db_events:
+                logger.debug("Assinando evento %s", evt_obj.id)
+                
+                # Gera o XML assinado
+                signed_xml = self.signer.sign_event(raw_xml, cert_pem, key_pem)
+                
+                # Salva o XML assinado no Storage
+                storage_path = f"eventos/{lote_db.empresa_id}/{evt_obj.id}_assinado.xml"
+                xml_url = await storage_service.upload_file(storage_path, signed_xml.encode("utf-8"))
+                
+                # Atualiza metadados do evento
+                evt_obj.xml_assinado = xml_url
                 evt_obj.status = EventoStatus.SIGNED
                 session.add(evt_obj)
             
+            # 3. Finaliza o Lote
             lote_db.status = LoteStatus.SIGNED
             lote_db.updated_at = datetime.utcnow()
             session.add(lote_db)
