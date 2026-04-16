@@ -8,6 +8,7 @@ import httpx
 from datetime import datetime
 from fpdf import FPDF
 from db.models import Lote, Evento, Empresa, LoteStatus, Ambiente
+from services.storage_service import storage_service
 
 logger = logging.getLogger(__name__)
 
@@ -35,36 +36,55 @@ class PDFService:
     def _setup_document(self, pdf: PDFReceiptGenerator, empresa: Empresa):
         pdf.add_page()
         
+        text_start_x = 10
+        text_start_y = 12
+        
         # Logo da Empresa
         has_logo = False
-        if empresa.logo_path and empresa.logo_path.startswith("http"):
+        if empresa.logo_path:
+            logo_url = empresa.logo_path
+            
+            # Formata URL absoluta do Supabase se for caminho interno do storage
+            if not logo_url.startswith("http"):
+                logo_url = storage_service.get_public_url(logo_url)
+                
             try:
                 # Download temporário do logo via httpx
                 with httpx.Client() as client:
-                    resp = client.get(empresa.logo_path, timeout=5.0)
+                    resp = client.get(logo_url, timeout=5.0)
                     if resp.status_code == 200:
                         logo_data = io.BytesIO(resp.content)
-                        # Insere no topo esquerdo (10, 10) com largura de 30mm
+                        # Insere no topo esquerdo (L=10, T=10, w=30)
                         pdf.image(logo_data, x=10, y=10, w=30)
                         has_logo = True
-                        pdf.ln(18) # Espanço maior após o logo
+                        text_start_x = 45 # Recua o texto 45mm à direita para não sobrescrever o logo
             except Exception as e:
                 logger.error(f"Falha ao carregar logo no PDF: {e}")
 
-        if not has_logo:
-            # Fallback corporativo elegante
-            pdf.set_font("helvetica", "B", 16)
-            pdf.set_text_color(0, 51, 102) # Azul Corporativo (Navy)
-            pdf.cell(0, 10, empresa.razao_social.upper(), ln=True, align="L")
+        # Razão Social
+        pdf.set_font("helvetica", "B", 16)
+        pdf.set_text_color(0, 51, 102) # Azul Corporativo
+        pdf.set_xy(text_start_x, text_start_y)
+        pdf.cell(0, 8, empresa.razao_social.upper())
+        pdf.ln(8)
             
+        # Formata e Imprime CNPJ
         pdf.set_font("helvetica", "", 10)
         pdf.set_text_color(100, 100, 100)
-        # Formata CNPJ se tiver 14 dígitos
         clean_cnpj = empresa.cnpj.replace(".", "").replace("/", "").replace("-", "")
         formatted_cnpj = f"{clean_cnpj[:2]}.{clean_cnpj[2:5]}.{clean_cnpj[5:8]}/{clean_cnpj[8:12]}-{clean_cnpj[12:]}" if len(clean_cnpj) == 14 else empresa.cnpj
+        
+        pdf.set_x(text_start_x)
         pdf.cell(0, 6, f"CNPJ: {formatted_cnpj}")
         pdf.ln(6)
-        pdf.ln(10)
+        
+        # Posicionamento pós-cabeçalho
+        if has_logo:
+            # Garante que o documento desça as coordenadas Y para ultrapassar a altura da imagem caso ela seja grande
+            new_y = max(pdf.get_y(), 38)
+            pdf.set_y(new_y)
+        else:
+            pdf.ln(10)
         
         # Título do Documento
         pdf.set_font("helvetica", "B", 14)
