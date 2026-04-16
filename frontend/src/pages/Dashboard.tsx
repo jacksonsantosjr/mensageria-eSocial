@@ -44,7 +44,7 @@ export function Dashboard() {
       
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map((c, i) => {
+        {cards.map((c: any, i: number) => {
           const Icon = c.icon;
           return (
             <div key={i} className="glass-card p-6 flex flex-col relative overflow-hidden group">
