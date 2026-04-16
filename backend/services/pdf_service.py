@@ -5,7 +5,7 @@ Utiliza fpdf2 para criar comprovantes de entrega elegantes e profissionais.
 import io
 import logging
 import httpx
-from datetime import datetime
+from datetime import datetime, timedelta
 from fpdf import FPDF
 from db.models import Lote, Evento, Empresa, LoteStatus, Ambiente
 from services.storage_service import storage_service
@@ -21,8 +21,11 @@ class PDFReceiptGenerator(FPDF):
         self.set_y(-15)
         self.set_font("helvetica", "I", 8)
         self.set_text_color(128, 128, 128)
-        now = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
-        self.cell(0, 10, f"Documento gerado automaticamente pelo sistema de Mensageria eSocial em {now}", align="C")
+        
+        # O Fuso do HF Spaces é UTC. Ajustando para BRT (UTC-3)
+        now_brt = datetime.now() - timedelta(hours=3)
+        now_str = now_brt.strftime("%d/%m/%Y às %H:%M:%S")
+        self.cell(0, 10, f"Documento gerado automaticamente pelo sistema de Mensageria eSocial em {now_str}", align="C")
 
     def create_table_header(self, columns):
         self.set_fill_color(240, 240, 240)
@@ -54,10 +57,10 @@ class PDFService:
                     resp = client.get(logo_url, timeout=5.0)
                     if resp.status_code == 200:
                         logo_data = io.BytesIO(resp.content)
-                        # Insere no topo esquerdo (L=10, T=10, w=30)
-                        pdf.image(logo_data, x=10, y=10, w=30)
+                        # Insere no topo esquerdo com largura menor (22mm)
+                        pdf.image(logo_data, x=10, y=10, w=22)
                         has_logo = True
-                        text_start_x = 45 # Recua o texto 45mm à direita para não sobrescrever o logo
+                        text_start_x = 36 # Recua o texto à direita da logo ajustada
             except Exception as e:
                 logger.error(f"Falha ao carregar logo no PDF: {e}")
 
@@ -81,7 +84,7 @@ class PDFService:
         # Posicionamento pós-cabeçalho
         if has_logo:
             # Garante que o documento desça as coordenadas Y para ultrapassar a altura da imagem caso ela seja grande
-            new_y = max(pdf.get_y(), 38)
+            new_y = max(pdf.get_y(), 34)
             pdf.set_y(new_y)
         else:
             pdf.ln(10)
@@ -105,7 +108,12 @@ class PDFService:
         pdf.ln(8)
         pdf.set_font("helvetica", "", 10)
         
-        data_transmissao = lote.created_at.strftime("%d/%m/%Y %H:%M") if lote.created_at else "---"
+        if lote.created_at:
+            dt_brt = lote.created_at - timedelta(hours=3)
+            data_transmissao = dt_brt.strftime("%d/%m/%Y %H:%M")
+        else:
+            data_transmissao = "---"
+            
         pdf.cell(90, 7, f"Protocolo: {lote.protocolo or 'N/A'}", border="B")
         pdf.cell(0, 7, f"Data de Envio: {data_transmissao}", border="B")
         pdf.ln(7)
