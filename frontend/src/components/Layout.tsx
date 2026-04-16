@@ -17,6 +17,25 @@ export function Layout() {
 
   const isProd = config?.value === 'PRODUCTION';
 
+  // Inicializa o modo dark no root html (garante comportamento correto on load)
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
+  const navItems = [
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Empresas', path: '/empresas', icon: ShieldAlert },
+    { name: 'Upload Lote', path: '/upload', icon: FileUp },
+    { name: 'Meus Lotes', path: '/lotes', icon: Inbox },
+    { name: 'Configurações', path: '/configuracoes', icon: Settings },
+  ];
+
   return (
     <div className="flex h-screen overflow-hidden text-slate-200 transition-colors duration-300">
       
@@ -35,7 +54,7 @@ export function Layout() {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2 relative">
-          {navItems.map((item) => {
+          {navItems.map((item: any) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
             
@@ -80,7 +99,7 @@ export function Layout() {
         
         <header className="h-20 flex items-center justify-between px-8 z-10 glass-panel border-x-0 border-t-0 rounded-b-lg mx-4 shadow-sm">
           <h2 className="text-xl font-medium text-white tracking-wide">
-            {navItems.find(i => i.path === location.pathname)?.name || 'Monitor'}
+            {navItems.find((i: any) => i.path === location.pathname)?.name || 'Monitor'}
           </h2>
           <div className="flex items-center">
             
