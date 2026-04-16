@@ -85,7 +85,7 @@ export default function Empresas() {
            </div>
            <button 
              onClick={() => setIsModalOpen(true)}
-             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
+             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
            >
              <Plus className="w-4 h-4 mr-2" />
              Nova Empresa
@@ -116,7 +116,7 @@ export default function Empresas() {
                   <tr key={emp.id} className="hover:bg-black/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-black/10 rounded-lg text-app-text/40">
+                        <div className="p-2 bg-black/10 rounded-xl text-app-text/40">
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>

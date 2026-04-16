@@ -82,12 +82,12 @@ export default function UploadLote() {
          </div>
          
          {loadingEmpresas ? (
-            <div className="flex items-center p-4 bg-gray-50 rounded-2xl">
+            <div className="flex items-center p-4 bg-black/5 rounded-3xl border border-glass-border">
                <Loader2 className="w-5 h-5 animate-spin text-primary-500 mr-2" />
-               <span className="text-gray-400 font-medium italic">Buscando empresas cadastradas...</span>
+               <span className="text-app-text/40 font-medium italic">Buscando empresas cadastradas...</span>
             </div>
          ) : empresas.length === 0 ? (
-            <div className="p-4 bg-orange-50 border border-orange-100 rounded-2xl text-orange-700 text-sm flex items-center">
+            <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-3xl text-orange-500 text-sm flex items-center">
                <AlertCircle className="w-5 h-5 mr-2" />
                Você ainda não cadastrou nenhuma empresa. <button onClick={() => navigate('/configuracoes')} className="ml-1 underline font-bold">Cadastrar agora.</button>
             </div>
@@ -158,7 +158,7 @@ export default function UploadLote() {
         )}
       </div>
 
-      <div className="bg-blue-500/10 p-6 rounded-2xl border border-blue-500/20 flex items-start space-x-4">
+      <div className="bg-blue-500/10 p-6 rounded-3xl border border-blue-500/20 flex items-start space-x-4">
          <AlertCircle className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
          <div className="text-sm">
             <p className="font-bold text-blue-500 mb-1">Dica de Transmissão</p>

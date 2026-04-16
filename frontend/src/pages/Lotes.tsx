@@ -73,7 +73,7 @@ export default function Lotes() {
                         <tr key={l.id} className="hover:bg-black/5 transition-colors">
                             <td className="px-6 py-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="p-2 bg-primary-500/10 rounded-lg text-primary-500">
+                                    <div className="p-2 bg-primary-500/10 rounded-xl text-primary-500">
                                         <FileJson className="w-5 h-5" />
                                     </div>
                                     <div>
@@ -94,7 +94,7 @@ export default function Lotes() {
                                     {l.status === 'PENDING' && (
                                         <button 
                                             title="Assinar Lote"
-                                            className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20"
+                                            className="p-2 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500/20 transition border border-blue-500/20"
                                             onClick={() => signMutation.mutate(l.id)}
                                             disabled={signMutation.isPending}
                                         >
@@ -106,7 +106,7 @@ export default function Lotes() {
                                     {l.status === 'SIGNED' && (
                                         <button 
                                             title="Enviar para eSocial"
-                                            className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500/20 transition border border-emerald-500/20"
+                                            className="p-2 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500/20 transition border border-emerald-500/20"
                                             onClick={() => sendMutation.mutate(l.id)}
                                             disabled={sendMutation.isPending}
                                         >
@@ -117,7 +117,7 @@ export default function Lotes() {
                                     {/* Botão Download */}
                                     <button 
                                         title="Baixar XML Original"
-                                        className="p-2 bg-black/5 text-app-text/40 rounded-lg hover:bg-black/10 transition border border-glass-border"
+                                        className="p-2 bg-black/5 text-app-text/40 rounded-xl hover:bg-black/10 transition border border-glass-border"
                                     >
                                         <Download className="w-4 h-4" />
                                     </button>
