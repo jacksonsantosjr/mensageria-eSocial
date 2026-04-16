@@ -39,4 +39,22 @@ class StorageService:
         """Retorna a URL assinada ou publica do arquivo."""
         return f"{settings.supabase_url}/storage/v1/object/public/{file_path}"
 
+    async def download_file(self, file_path: str) -> bytes:
+        """Baixa um arquivo do bucket do Supabase."""
+        # Remove o prefixo do bucket se presente
+        clean_path = file_path
+        if clean_path.startswith(f"{self.bucket}/"):
+            clean_path = clean_path[len(f"{self.bucket}/"):]
+        
+        download_url = f"{self.url}/object/{self.bucket}/{clean_path}"
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(download_url, headers=self.headers)
+            
+            if response.status_code != 200:
+                logger.error("Erro no download do Supabase: %s", response.text)
+                raise Exception(f"Falha ao baixar arquivo do Storage ({response.status_code})")
+            
+            return response.content
+
 storage_service = StorageService()
