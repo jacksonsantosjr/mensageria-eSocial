@@ -5,45 +5,35 @@ from typing import List, Dict
 
 from db.session import get_session
 from db.models import Lote, LoteStatus, Ambiente
-from schemas.lote import LoteResponse
+from schemas.lote import LoteResponse, DashboardResumoResponse, DashboardMetrics
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
-@router.get("/resumo")
+@router.get("/resumo", response_model=DashboardResumoResponse)
 async def get_dashboard_resumo(session: Session = Depends(get_session)):
-    """Retorna estatisticas reais para os cards do Dashboard."""
+    """Retorna estatisticas reais para os cards do Dashboard através do Pydantic."""
     
-    # 1. Total Lotes
-    total_lotes = session.exec(select(func.count(Lote.id))).first() or 0
+    # Buscamos todos os lotes localmente para processamento,
+    # eliminando riscos de exceções nas tipagens de enum customizadas do Postgres
+    todos_lotes = session.exec(select(Lote).order_by(Lote.created_at.desc())).all()
     
-    # 2. Pendentes (PENDING, VALIDATING, SIGNED)
-    pendentes_query = select(func.count(Lote.id)).where(Lote.status.in_([
-        LoteStatus.PENDING, 
-        LoteStatus.VALIDATING, 
-        LoteStatus.SIGNED
-    ]))
-    pendentes = session.exec(pendentes_query).first() or 0
+    total = len(todos_lotes)
     
-    # 3. Processados (PROCESSED)
-    processados = session.exec(
-        select(func.count(Lote.id)).where(Lote.status == LoteStatus.PROCESSED)
-    ).first() or 0
+    # Processa Enum Nativo do SQLModel diretamente no Python
+    pendentes = sum(1 for l in todos_lotes if l.status in [
+        LoteStatus.PENDING, LoteStatus.VALIDATING, LoteStatus.SIGNED
+    ])
+    processados = sum(1 for l in todos_lotes if l.status == LoteStatus.PROCESSED)
+    erros = sum(1 for l in todos_lotes if l.status == LoteStatus.ERROR)
     
-    # 4. Rejeitados / Erro (ERROR + SENT/PROCESSING que falharam)
-    erros = session.exec(
-        select(func.count(Lote.id)).where(Lote.status == LoteStatus.ERROR)
-    ).first() or 0
+    recent_lotes = todos_lotes[:5] if total > 0 else []
 
-    # 5. Ultimos 5 Lotes
-    statement = select(Lote).order_by(Lote.created_at.desc()).limit(5)
-    recent_lotes = session.exec(statement).all()
-
-    return {
-        "metrics": {
-            "total": total_lotes,
-            "pending": pendentes,
-            "processed": processados,
-            "errors": erros
-        },
-        "recent_lotes": [LoteResponse.model_validate(l).model_dump(mode="json") for l in recent_lotes]
-    }
+    return DashboardResumoResponse(
+        metrics=DashboardMetrics(
+            total=total,
+            pending=pendentes,
+            processed=processados,
+            errors=erros
+        ),
+        recent_lotes=recent_lotes
+    )

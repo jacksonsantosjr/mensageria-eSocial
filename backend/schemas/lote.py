@@ -37,9 +37,13 @@ class EventoResponse(BaseModel):
 class LoteDetalheResponse(LoteResponse):
     eventos: list[EventoResponse] = []
 
-class DashboardResumo(BaseModel):
-    total: int
-    pendentes: int
-    enviados: int
-    processados: int
-    com_erro: int
+class DashboardMetrics(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    total: int = 0
+    pending: int = 0
+    processed: int = 0
+    errors: int = 0
+
+class DashboardResumoResponse(BaseModel):
+    metrics: DashboardMetrics
+    recent_lotes: list[LoteResponse] = []
