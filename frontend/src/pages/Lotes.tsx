@@ -201,13 +201,7 @@ export default function Lotes() {
                                 <td className="py-4 px-2 text-xs font-mono text-app-text/60">{(evt.evento_id_esocial || '').substring(0, 30)}...</td>
                                 <td className="py-4 px-2">
                                     <div className="flex justify-center">
-                                        {evt.status === 'PROCESSED' ? (
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        ) : evt.status === 'ERROR' ? (
-                                            <AlertCircle className="w-5 h-5 text-red-500" />
-                                        ) : (
-                                            <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
-                                        )}
+                                        <StatusBadge status={evt.status} />
                                     </div>
                                 </td>
                                 <td className="py-4 px-0 pr-2">
