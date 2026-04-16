@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLotes, signLote, sendLote } from '../services/api';
 import { FileJson, Loader2, Send, PenTool, Download } from 'lucide-react';
+import { useAlert } from '../context/AlertContext';
 
 export default function Lotes() {
   const queryClient = useQueryClient();
+  const { showAlert } = useAlert();
 
   const { data: lotes = [], isLoading: loadingLotes } = useQuery({ 
     queryKey: ['lotes'], 
@@ -12,17 +14,20 @@ export default function Lotes() {
 
   const signMutation = useMutation({
     mutationFn: (loteId: string) => signLote(loteId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['lotes'] }),
-    onError: (err: any) => alert(`Erro ao assinar: ${err}`)
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['lotes'] });
+        showAlert("Lote Assinado", "O lote foi assinado digitalmente com sucesso e está pronto para o envio.", "success");
+    },
+    onError: (err: any) => showAlert("Erro na Assinatura", `Não foi possível assinar o lote: ${err}`, "error")
   });
 
   const sendMutation = useMutation({
     mutationFn: (loteId: string) => sendLote(loteId),
     onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['lotes'] });
-        alert("Lote enviado com sucesso ao eSocial!");
+        showAlert("Lote Enviado", "Lote enviado com sucesso ao portal do eSocial!", "success");
     },
-    onError: (err: any) => alert(`Erro ao enviar: ${err}`)
+    onError: (err: any) => showAlert("Erro no Envio", `Não foi possível enviar o lote ao eSocial: ${err}`, "error")
   });
 
   const StatusBadge = ({ status }: { status: string }) => {

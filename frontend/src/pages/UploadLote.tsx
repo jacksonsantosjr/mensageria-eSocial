@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getEmpresas, createLote } from '../services/api';
 import { Upload, Loader2, Building2, FileCheck, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAlert } from '../context/AlertContext';
 
 export default function UploadLote() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [empresaId, setEmpresaId] = useState('');
@@ -22,11 +24,11 @@ export default function UploadLote() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lotes'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardResumo'] });
-      alert("Lote processado com sucesso!");
+      showAlert("Sucesso!", "Lote processado com sucesso!", "success");
       navigate('/lotes'); // Redireciona para a listagem
     },
     onError: (err: any) => {
-      alert(`Erro no processamento: ${err}`);
+      showAlert("Erro de Processamento", `Não foi possível processar o XML: ${err}`, "error");
     }
   });
 
@@ -52,11 +54,11 @@ export default function UploadLote() {
 
   const handleFileUpload = (file: File) => {
     if (!empresaId) {
-       alert('Por favor, selecione a Empresa Transmissora primeiro.');
+       showAlert("Empresa não selecionada", "Por favor, selecione a Empresa Transmissora primeiro antes de realizar o upload.", "warning");
        return;
     }
     if (!file.name.endsWith('.xml')) {
-       alert('Apenas arquivos XML são permitidos.');
+       showAlert("Arquivo Inválido", "Apenas arquivos XML são permitidos para transmissão ao eSocial.", "error");
        return;
     }
     mutation.mutate(file);

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getEmpresas, createEmpresa, getCNPJData } from '../services/api';
 import { Plus, Loader2, Building2, ShieldCheck, X } from 'lucide-react';
+import { useAlert } from '../context/AlertContext';
 
 export default function Empresas() {
   const queryClient = useQueryClient();
+  const { showAlert } = useAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   
@@ -25,8 +27,9 @@ export default function Empresas() {
       queryClient.invalidateQueries({ queryKey: ['empresas'] });
       setIsModalOpen(false);
       resetForm();
+      showAlert("Empresa Cadastrada", "Os dados da empresa e as configurações do certificado foram salvos com sucesso.", "success");
     },
-    onError: (err: any) => alert(`Erro ao cadastrar: ${err}`)
+    onError: (err: any) => showAlert("Erro no Cadastro", `Não foi possível cadastrar a empresa: ${err}`, "error")
   });
 
   const resetForm = () => {
