@@ -69,7 +69,7 @@ export default function Lotes() {
                 <thead className="bg-app-bg/80 text-app-text opacity-40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-app-border">
                     <tr>
                         <th className="px-6 py-4">Lote / Data</th>
-                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4 text-center">Status</th>
                         <th className="px-6 py-4 text-center">Evt.</th>
                         <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
@@ -91,7 +91,7 @@ export default function Lotes() {
                                     </div>
                                 </div>
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-6 py-4 text-center">
                                 <StatusBadge status={l.status} />
                             </td>
                             <td className="px-6 py-4 text-center text-sm font-semibold text-app-text/80">

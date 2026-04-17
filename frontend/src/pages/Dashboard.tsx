@@ -74,7 +74,7 @@ export function Dashboard() {
               <tr className="border-b border-app-border text-[10px] uppercase font-bold tracking-widest text-app-text opacity-40">
                 <th className="px-6 py-4">Lote / ID</th>
                 <th className="px-6 py-4">Data de Envio</th>
-                <th className="px-6 py-4">Status eSocial</th>
+                <th className="px-6 py-4 text-center">Status eSocial</th>
                 <th className="px-6 py-4 text-right">Ações</th>
               </tr>
             </thead>
@@ -97,7 +97,7 @@ export function Dashboard() {
                   <td className="px-6 py-4 text-app-text/80 font-mono text-xs">
                     {new Date(row.created_at).toLocaleString('pt-BR')}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <StatusBadge status={mapStatus(row.status) as any} />
                   </td>
                   <td className="px-6 py-4 text-right">
