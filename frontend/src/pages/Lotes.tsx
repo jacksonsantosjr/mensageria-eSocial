@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createPortal } from 'react-dom';
 import { getLotes, signLote, sendLote, downloadLotePDF, downloadEventoPDF, getLote } from '../services/api';
 import { FileJson, Loader2, Send, PenTool, Download, FileText, Eye, X } from 'lucide-react';
 import { useAlert } from '../context/AlertContext';
@@ -171,9 +172,9 @@ export default function Lotes() {
          )}
       </div>
 
-      {/* Modal de Eventos */}
-      {selectedLote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      {/* Modal de Eventos - Portal para cobertura global */}
+      {selectedLote && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
           <div className="glass-card w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
               <div>
@@ -234,8 +235,9 @@ export default function Lotes() {
                 </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
-}
+}

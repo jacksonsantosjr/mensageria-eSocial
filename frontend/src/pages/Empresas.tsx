@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getEmpresas, createEmpresa, updateEmpresa, getCNPJData, uploadLogo } from '../services/api';
 import { Plus, Loader2, Building2, ShieldCheck, X, Camera } from 'lucide-react';
@@ -227,11 +228,11 @@ export default function Empresas() {
         )}
       </div>
 
-      {/* Modal de Cadastro/Edição */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      {/* Modal de Cadastro/Edição - Portal para cobertura global */}
+      {isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
           <div className="bg-app-bg border border-app-border p-0 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
+            <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/30 relative z-10">
               <h2 className="text-xl font-bold text-app-text">
                 {editingId ? 'Editar Transmissora' : 'Cadastrar Nova Transmissora'}
               </h2>
@@ -240,7 +241,7 @@ export default function Empresas() {
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 relative z-10 bg-app-bg/50">
               <div>
                 <label className="block text-sm font-bold text-app-text/60 mb-1">CNPJ da Empresa</label>
                 <div className="relative">
@@ -284,8 +285,8 @@ export default function Empresas() {
               </div>
 
               {editingId && (
-                <div className="pt-2 p-4 bg-primary-500/5 rounded-lg border border-primary-500/10">
-                  <label className="block text-sm font-bold text-primary-400 mb-2 flex items-center">
+                <div className="pt-2 p-4 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                  <label className="block text-sm font-bold text-blue-400 mb-2 flex items-center">
                     <Camera className="w-4 h-4 mr-2" /> Logotipo da Empresa
                   </label>
                   <div className="flex items-center space-x-4">
@@ -333,15 +334,16 @@ export default function Empresas() {
                 <button 
                   type="submit"
                   disabled={mutation.isPending}
-                  className="flex-1 px-4 py-3 bg-primary-600 text-white rounded-lg font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center active:scale-95 disabled:bg-gray-400"
                 >
                   {mutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Salvar Empresa'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
-}
+}
