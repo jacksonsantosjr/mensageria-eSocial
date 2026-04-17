@@ -26,8 +26,10 @@ export function Layout() {
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   }, [isDark]);
 
@@ -42,18 +44,18 @@ export function Layout() {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden text-slate-200 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden text-app-text transition-colors duration-300">
       
-      {/* Sidebar - Premium Glass */}
-      <aside className="w-64 glass-panel border-r-0 border-y-0 rounded-r-lg m-2 my-4 ml-4 flex flex-col relative z-20">
+      {/* Sidebar - Semantic Design */}
+      <aside className="w-64 bg-app-bg border-r border-app-border my-4 ml-4 rounded-xl flex flex-col relative z-20 shadow-sm">
         <div className="p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-neon-blue">
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gradient leading-tight tracking-tight">eSocial</h1>
-              <p className="text-xs text-slate-400 font-medium tracking-widest uppercase">Mensageria</p>
+              <h1 className="text-xl font-bold text-gradient leading-tight tracking-tight">eSocial</h1>
+              <p className="text-[10px] text-app-text opacity-50 font-medium tracking-[0.2em] uppercase">Mensageria</p>
             </div>
           </div>
         </div>
@@ -102,8 +104,8 @@ export function Layout() {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <div className="absolute top-[-10%] sm:right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none transition-opacity duration-300" />
         
-        <header className="h-20 flex items-center justify-between px-8 z-10 glass-panel border-x-0 border-t-0 rounded-b-lg mx-4 shadow-sm">
-          <h2 className="text-xl font-medium text-white tracking-wide">
+        <header className="h-20 flex items-center justify-between px-8 z-10 bg-app-bg border-b border-app-border mx-4 rounded-xl shadow-sm">
+          <h2 className="text-xl font-semibold text-app-text tracking-tight">
             {navItems.find((i: any) => i.path === location.pathname)?.name || 'Monitor'}
           </h2>
           <div className="flex items-center">

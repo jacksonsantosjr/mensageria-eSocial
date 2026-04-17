@@ -47,27 +47,24 @@ export function Dashboard() {
         {cards.map((c: any, i: number) => {
           const Icon = c.icon;
           return (
-            <div key={i} className="glass-card p-6 flex flex-col relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Icon className={`w-24 h-24 ${c.color} transform translate-x-4 -translate-y-4`} />
-              </div>
-              <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${c.bg} border-white/5 border`}>
-                  <Icon className={`w-6 h-6 ${c.color}`} />
+            <div key={i} className="bg-app-bg border border-app-border p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+              <div className="flex items-center gap-4 mb-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${c.bg} border-app-border border shadow-sm`}>
+                  <Icon className={`w-5 h-5 ${c.color}`} />
                 </div>
-                <h3 className="text-sm font-medium text-slate-400 tracking-wide uppercase">{c.title}</h3>
+                <h3 className="text-xs font-bold text-app-text opacity-60 tracking-widest uppercase">{c.title}</h3>
               </div>
-              <p className="text-4xl font-bold text-white relative z-10">{c.value}</p>
+              <p className="text-3xl font-extrabold text-app-text">{c.value}</p>
             </div>
           );
         })}
       </div>
 
       {/* Main Table */}
-      <div className="glass-panel overflow-hidden">
-        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
-          <h3 className="text-lg font-medium text-slate-200">Visão Geral dos Últimos Lotes</h3>
-          <Link to="/meus-lotes" className="text-sm font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors">
+      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
+          <h3 className="text-lg font-bold text-app-text tracking-tight">Visão Geral dos Últimos Lotes</h3>
+          <Link to="/lotes" className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
             Ver Todos <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

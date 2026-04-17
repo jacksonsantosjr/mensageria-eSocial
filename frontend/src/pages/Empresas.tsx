@@ -126,15 +126,15 @@ export default function Empresas() {
 
   return (
     <div className="space-y-6">
-      <div className="glass-card overflow-hidden">
-        <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
+      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
            <div>
-              <h3 className="text-lg font-bold text-app-text">Gerenciar Empresas</h3>
-              <p className="text-sm text-app-text/60">Cadastre os transmissores autorizados para envio do eSocial.</p>
+              <h3 className="text-lg font-bold text-app-text tracking-tight">Gerenciar Empresas</h3>
+              <p className="text-sm text-app-text opacity-60">Cadastre os transmissores autorizados para envio do eSocial.</p>
            </div>
            <button 
              onClick={() => { resetForm(); setIsModalOpen(true); }}
-             className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg flex items-center shadow-lg shadow-primary-500/20 transition-all active:scale-95 font-bold"
+             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition-all active:scale-95 font-bold"
            >
              <Plus className="w-4 h-4 mr-2" />
              Nova Empresa
@@ -149,7 +149,7 @@ export default function Empresas() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-black/20 text-app-text/60 text-[10px] uppercase font-black tracking-widest">
+              <thead className="bg-app-bg/80 text-app-text opacity-40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-app-border">
                 <tr>
                   <th className="px-6 py-4">Razão Social / CNPJ</th>
                   <th className="px-6 py-4">Certificado</th>
@@ -157,7 +157,7 @@ export default function Empresas() {
                   <th className="px-6 py-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-glass-border">
+              <tbody className="divide-y divide-app-border">
                 {empresas.length === 0 && (
                    <tr><td colSpan={4} className="px-6 py-12 text-center text-app-text/40 font-medium italic">Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.</td></tr>
                 )}
@@ -229,13 +229,13 @@ export default function Empresas() {
 
       {/* Modal de Cadastro/Edição */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="glass-card w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-app-bg border border-app-border p-0 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
               <h2 className="text-xl font-bold text-app-text">
                 {editingId ? 'Editar Transmissora' : 'Cadastrar Nova Transmissora'}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-app-text/40 hover:text-app-text transition">
+              <button onClick={() => setIsModalOpen(false)} className="text-app-text opacity-40 hover:opacity-100 transition">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -270,17 +270,17 @@ export default function Empresas() {
                 />
               </div>
 
-              <div className="pt-2">
-                <label className="block text-sm font-bold text-app-text/60 mb-1">Certificado Digital A1 (.pfx)</label>
+              <div>
+                <label className="block text-sm font-bold text-app-text opacity-60 mb-1">Certificado Digital A1 (.pfx)</label>
                 <div className="flex items-center space-x-2">
                    <input 
                     type="file" 
                     accept=".pfx,.p12"
                     onChange={handleFileChange}
-                    className="flex-1 text-sm text-app-text/40 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-500/10 file:text-primary-500 hover:file:bg-primary-500/20 transition cursor-pointer"
+                    className="flex-1 text-sm text-app-text opacity-40 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition cursor-pointer"
                   />
                 </div>
-                <p className="text-[10px] text-app-text/30 mt-1 uppercase font-black tracking-widest">Apenas arquivos .pfx ou .p12</p>
+                <p className="text-[10px] text-app-text opacity-30 mt-1 uppercase font-black tracking-widest">Apenas arquivos .pfx ou .p12</p>
               </div>
 
               {editingId && (

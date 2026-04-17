@@ -35,11 +35,11 @@ export default function Lotes() {
 
   const StatusBadge = ({ status }: { status: string }) => {
      const styles: Record<string, string> = {
-        'PENDING': 'bg-orange-100 text-orange-700 border-orange-200',
+        'PENDING': 'bg-amber-100 text-amber-700 border-amber-200',
         'VALIDATING': 'bg-indigo-100 text-indigo-700 border-indigo-200',
         'SIGNED': 'bg-blue-100 text-blue-700 border-blue-200',
         'SENT': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-        'PROCESSING': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+        'PROCESSING': 'bg-sky-100 text-sky-700 border-sky-200',
         'PROCESSED': 'bg-green-100 text-green-700 border-green-200',
         'ERROR': 'bg-red-100 text-red-700 border-red-200',
      };
@@ -55,10 +55,10 @@ export default function Lotes() {
   return (
     <div className="space-y-6">
       {/* Histórico e Ações */}
-      <div className="glass-card overflow-hidden">
-         <div className="p-6 border-b border-glass-border flex justify-between items-center bg-black/5">
-            <h3 className="text-lg font-bold text-app-text">Gerenciamento de Lotes</h3>
-            <button className="text-sm text-primary-500 font-semibold hover:underline" onClick={() => queryClient.invalidateQueries({ queryKey: ['lotes'] })}>
+      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+         <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
+            <h3 className="text-lg font-bold text-app-text tracking-tight">Gerenciamento de Lotes</h3>
+            <button className="text-sm text-blue-500 font-bold hover:underline" onClick={() => queryClient.invalidateQueries({ queryKey: ['lotes'] })}>
                 Atualizar Lista
             </button>
          </div>
@@ -66,7 +66,7 @@ export default function Lotes() {
          {loadingLotes ? <div className="p-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500" /></div> : (
            <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="bg-black/20 text-app-text/60 text-[10px] uppercase font-black tracking-widest">
+                <thead className="bg-app-bg/80 text-app-text opacity-40 text-[10px] uppercase font-bold tracking-[0.2em] border-b border-app-border">
                     <tr>
                         <th className="px-6 py-4">Lote / Data</th>
                         <th className="px-6 py-4">Status</th>
