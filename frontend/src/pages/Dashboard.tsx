@@ -78,30 +78,30 @@ export function Dashboard() {
                 <th className="px-6 py-4 font-medium text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-sm text-slate-300">
+            <tbody className="divide-y divide-app-border text-sm text-app-text/70">
               {recentLotes.length === 0 && (
                 <tr>
-                   <td colSpan={4} className="px-6 py-12 text-center text-slate-500 italic">Nenhum lote enviado recentemente.</td>
+                   <td colSpan={4} className="px-6 py-12 text-center text-app-text/40 italic font-medium">Nenhum lote enviado recentemente.</td>
                 </tr>
               )}
               {recentLotes.map((row: any) => (
-                <tr key={row.id} className="hover:bg-white/5 transition-colors">
+                <tr key={row.id} className="hover:bg-app-bg/80 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-slate-800 flex items-center justify-center text-[10px] font-mono border border-slate-700 uppercase">
+                      <div className="w-8 h-8 rounded bg-app-tertiary flex items-center justify-center text-[10px] font-mono border border-app-border uppercase text-app-text/40">
                         XML
                       </div>
-                      <span className="font-medium text-slate-200">Lote #{row.id.substring(0, 8)}</span>
+                      <span className="font-bold text-app-text/80 tracking-tight">Lote #{row.id.substring(0, 8)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-400 font-mono text-xs">
+                  <td className="px-6 py-4 text-app-text/80 font-mono text-xs">
                     {new Date(row.created_at).toLocaleString('pt-BR')}
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge status={mapStatus(row.status) as any} />
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="px-3 py-1.5 rounded-md text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors">
+                    <button className="px-3 py-1.5 rounded-md text-xs font-bold bg-blue-500/10 text-blue-600 border border-blue-500/20 hover:bg-blue-500/20 transition-all active:scale-95">
                       Detalhes
                     </button>
                   </td>
