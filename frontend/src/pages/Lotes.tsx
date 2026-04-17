@@ -46,7 +46,7 @@ export default function Lotes() {
      
      const label = styles[status] ? status : 'UNKNOWN';
      return (
-        <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${styles[status]}`}>
+        <span className={`px-3 py-1 rounded-md text-xs font-bold border ${styles[status]}`}>
             {label}
         </span>
      );
@@ -55,7 +55,7 @@ export default function Lotes() {
   return (
     <div className="space-y-6">
       {/* Histórico e Ações */}
-      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-app-bg border border-app-border rounded-lg shadow-sm overflow-hidden">
          <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
             <h3 className="text-lg font-bold text-app-text tracking-tight">Gerenciamento de Lotes</h3>
             <button className="text-sm text-blue-500 font-bold hover:underline" onClick={() => queryClient.invalidateQueries({ queryKey: ['lotes'] })}>
@@ -82,7 +82,7 @@ export default function Lotes() {
                         <tr key={l.id} className="hover:bg-black/5 transition-colors">
                             <td className="px-6 py-4">
                                 <div className="flex items-center space-x-3">
-                                    <div className="p-2 bg-primary-500/10 rounded-lg text-primary-500">
+                                    <div className="p-2 bg-primary-500/10 rounded-md text-primary-500">
                                         <FileJson className="w-5 h-5" />
                                     </div>
                                     <div>
@@ -103,7 +103,7 @@ export default function Lotes() {
                                     {l.status === 'PENDING' && (
                                         <button 
                                             title="Assinar Lote"
-                                            className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20"
+                                            className="p-2 bg-blue-500/10 text-blue-500 rounded-md hover:bg-blue-500/20 transition border border-blue-500/20"
                                             onClick={() => signMutation.mutate(l.id)}
                                             disabled={signMutation.isPending}
                                         >
@@ -115,7 +115,7 @@ export default function Lotes() {
                                     {l.status === 'SIGNED' && (
                                         <button 
                                             title="Enviar para eSocial"
-                                            className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500/20 transition border border-emerald-500/20"
+                                            className="p-2 bg-emerald-500/10 text-emerald-500 rounded-md hover:bg-emerald-500/20 transition border border-emerald-500/20"
                                             onClick={() => sendMutation.mutate(l.id)}
                                             disabled={sendMutation.isPending}
                                         >
@@ -126,7 +126,7 @@ export default function Lotes() {
                                     {/* Botão Ver Detalhes */}
                                     <button 
                                         title="Ver Eventos do Lote"
-                                        className="p-2 bg-blue-500/10 text-blue-500 rounded-lg hover:bg-blue-500/20 transition border border-blue-500/20 disabled:opacity-50"
+                                        className="p-2 bg-blue-500/10 text-blue-500 rounded-md hover:bg-blue-500/20 transition border border-blue-500/20 disabled:opacity-50"
                                         onClick={async () => {
                                             setLoadingDetails(l.id);
                                             try {
@@ -147,7 +147,7 @@ export default function Lotes() {
                                     {(l.status === 'SENT' || l.status === 'PROCESSED' || l.status === 'ERROR') && (
                                         <button 
                                             title="Baixar Comprovante Lote (PDF)"
-                                            className="p-2 bg-amber-500/10 text-amber-500 rounded-lg hover:bg-amber-500/20 transition border border-amber-500/20"
+                                            className="p-2 bg-amber-500/10 text-amber-500 rounded-md hover:bg-amber-500/20 transition border border-amber-500/20"
                                             onClick={() => downloadLotePDF(l.id)}
                                         >
                                             <FileText className="w-4 h-4" />
@@ -157,7 +157,7 @@ export default function Lotes() {
                                     {/* Botão Download XML */}
                                     <button 
                                         title="Baixar XML Original"
-                                        className="p-2 bg-black/5 text-app-text/40 rounded-lg hover:bg-black/10 transition border border-glass-border"
+                                        className="p-2 bg-black/5 text-app-text/40 rounded-md hover:bg-black/10 transition border border-glass-border"
                                     >
                                         <Download className="w-4 h-4" />
                                     </button>
@@ -228,7 +228,7 @@ export default function Lotes() {
             <div className="p-6 bg-black/10 border-t border-glass-border flex justify-end">
                 <button 
                   onClick={() => setSelectedLote(null)}
-                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-app-text/60 rounded-lg font-bold transition"
+                  className="px-6 py-2 bg-white/5 hover:bg-white/10 text-app-text/60 rounded-md font-bold transition"
                 >
                   Fechar
                 </button>

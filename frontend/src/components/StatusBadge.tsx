@@ -39,7 +39,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <span className={clsx(
-      "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border",
+      "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium border",
       color,
       glow
     )}>

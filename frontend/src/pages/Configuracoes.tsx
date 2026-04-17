@@ -42,7 +42,7 @@ export default function Configuracoes() {
       
       {/* Header Section */}
       <div className="flex items-center gap-4 mb-2">
-        <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 shadow-sm">
+        <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20 shadow-sm">
           <Settings className="w-8 h-8 text-blue-500" />
         </div>
         <div>
@@ -71,7 +71,7 @@ export default function Configuracoes() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between p-6 rounded-xl bg-app-bg border border-app-border shadow-inner">
+                <div className="flex items-center justify-between p-6 rounded-lg bg-app-bg border border-app-border shadow-inner">
                     <div className="flex flex-col">
                         <span className="text-[10px] uppercase font-bold tracking-widest text-app-text opacity-40 mb-1">Status Atual</span>
                         <div className={`text-sm font-bold flex items-center gap-2 ${isProd ? 'text-red-500' : 'text-amber-500'}`}>
@@ -92,7 +92,7 @@ export default function Configuracoes() {
                 </div>
 
                 {isProd && (
-                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 animate-pulse">
+                    <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 animate-pulse">
                         <p className="text-xs text-red-600 dark:text-red-300 font-bold leading-relaxed">
                             ⚠️ ATENÇÃO: Você está em ambiente de PRODUÇÃO. Todas as transmissões terão validade jurídica e fiscal perante a Receita Federal e o Ministério do Trabalho.
                         </p>
