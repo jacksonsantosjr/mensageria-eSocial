@@ -72,14 +72,18 @@ export function Layout() {
                 className={({ isActive }) => clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-300",
                   isActive 
-                    ? "bg-blue-500/10 text-app-text dark:text-cyan-300 border border-blue-500/20 shadow-sm font-bold" 
+                    ? clsx(
+                        "bg-blue-500/10 border border-blue-500/20 shadow-sm font-extrabold",
+                        isDark ? "text-cyan-300" : "text-slate-950"
+                      )
                     : "text-app-text opacity-50 hover:text-app-text hover:bg-app-bg transition-colors font-medium"
                 )}
               >
                 <Icon className={clsx(
                   "w-5 h-5 transition-transform duration-300", 
                   isActive && "scale-110",
-                  isActive && isDark && "drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+                  isActive && !isDark && "text-slate-950",
+                  isActive && isDark && "text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
                 )} />
                 {item.name}
               </NavLink>
