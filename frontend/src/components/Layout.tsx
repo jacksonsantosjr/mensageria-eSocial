@@ -74,7 +74,7 @@ export function Layout() {
                   isActive 
                     ? clsx(
                         "bg-blue-500/10 border border-blue-500/20 shadow-sm font-extrabold",
-                        isDark ? "text-cyan-300" : "text-slate-950"
+                        isDark ? "text-cyan-300" : "text-[#0f4c81]"
                       )
                     : "text-app-text opacity-50 hover:text-app-text hover:bg-app-bg transition-colors font-medium"
                 )}
@@ -82,7 +82,7 @@ export function Layout() {
                 <Icon className={clsx(
                   "w-5 h-5 transition-transform duration-300", 
                   isActive && "scale-110",
-                  isActive && !isDark && "text-slate-950",
+                  isActive && !isDark && "text-[#0f4c81]",
                   isActive && isDark && "text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
                 )} />
                 {item.name}
