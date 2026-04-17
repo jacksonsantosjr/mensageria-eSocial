@@ -126,7 +126,7 @@ export default function Empresas() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-app-bg border border-app-border rounded-lg shadow-sm overflow-hidden">
         <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
            <div>
               <h3 className="text-lg font-bold text-app-text tracking-tight">Gerenciar Empresas</h3>
@@ -165,7 +165,7 @@ export default function Empresas() {
                   <tr key={emp.id} className="hover:bg-black/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-3">
-                        <div className="relative group p-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl">
+                        <div className="relative group p-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg">
                           <label className="cursor-pointer block">
                             <div className="w-12 h-12 rounded-[10px] overflow-hidden bg-black/40 flex items-center justify-center relative">
                               {isUploadingLogo === emp.id ? (
@@ -230,7 +230,7 @@ export default function Empresas() {
       {/* Modal de Cadastro/Edição */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-app-bg border border-app-border p-0 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+          <div className="bg-app-bg border border-app-border p-0 w-full max-w-lg rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
               <h2 className="text-xl font-bold text-app-text">
                 {editingId ? 'Editar Transmissora' : 'Cadastrar Nova Transmissora'}
@@ -284,7 +284,7 @@ export default function Empresas() {
               </div>
 
               {editingId && (
-                <div className="pt-2 p-4 bg-primary-500/5 rounded-xl border border-primary-500/10">
+                <div className="pt-2 p-4 bg-primary-500/5 rounded-lg border border-primary-500/10">
                   <label className="block text-sm font-bold text-primary-400 mb-2 flex items-center">
                     <Camera className="w-4 h-4 mr-2" /> Logotipo da Empresa
                   </label>

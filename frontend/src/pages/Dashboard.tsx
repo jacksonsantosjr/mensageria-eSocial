@@ -47,7 +47,7 @@ export function Dashboard() {
         {cards.map((c: any, i: number) => {
           const Icon = c.icon;
           return (
-            <div key={i} className="bg-app-bg border border-app-border p-6 rounded-xl shadow-sm hover:shadow-md transition-all group">
+            <div key={i} className="bg-app-bg border border-app-border p-6 rounded-lg shadow-sm hover:shadow-md transition-all group">
               <div className="flex items-center gap-4 mb-3">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${c.bg} border-app-border border shadow-sm`}>
                   <Icon className={`w-5 h-5 ${c.color}`} />
@@ -61,7 +61,7 @@ export function Dashboard() {
       </div>
 
       {/* Main Table */}
-      <div className="bg-app-bg border border-app-border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-app-bg border border-app-border rounded-lg shadow-sm overflow-hidden">
         <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/50">
           <h3 className="text-lg font-bold text-app-text tracking-tight">Visão Geral dos Últimos Lotes</h3>
           <Link to="/lotes" className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
