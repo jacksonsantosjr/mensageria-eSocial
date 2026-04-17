@@ -35,7 +35,8 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     }
   };
 
-  const { color, icon: Icon, label, glow } = config[status];
+  const activeConfig = config[status] || config.PENDING;
+  const { color, icon: Icon, label, glow } = activeConfig;
 
   return (
     <span className={clsx(

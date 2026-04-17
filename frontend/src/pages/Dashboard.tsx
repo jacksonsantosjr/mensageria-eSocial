@@ -189,7 +189,7 @@ export function Dashboard() {
                           <td className="px-4 py-3 font-bold text-blue-400">{evt.tipo}</td>
                           <td className="px-4 py-3 font-mono opacity-60">{(evt.evento_id_esocial || '').substring(0, 30)}...</td>
                           <td className="px-4 py-3 text-center">
-                            <StatusBadge status={evt.status} />
+                            <StatusBadge status={mapStatus(evt.status) as any} />
                           </td>
                           <td className="px-4 py-3 text-right group">
                             <div className="flex items-center justify-end gap-2">
@@ -223,6 +223,10 @@ export function Dashboard() {
                   Imprimir Comprovante
                 </button>
                 <button 
+                  onClick={() => {
+                    // Simulação de download XML (no futuro pode ser uma chamada API real)
+                    showAlert("Download XML", "O arquivo XML original está sendo preparado.", "info");
+                  }}
                   className="flex items-center gap-2 px-4 py-2 bg-app-bg border border-app-border text-app-text/60 rounded-md text-sm font-bold hover:bg-app-bg/80 transition-colors"
                 >
                   <Download className="w-4 h-4" />
