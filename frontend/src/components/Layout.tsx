@@ -47,10 +47,10 @@ export function Layout() {
     <div className="flex h-screen overflow-hidden text-app-text transition-colors duration-300">
       
       {/* Sidebar - Semantic Design */}
-      <aside className="w-64 bg-app-bg border-r border-app-border my-4 ml-4 rounded-xl flex flex-col relative z-20 shadow-sm">
+      <aside className="w-64 bg-app-bg border-r border-app-border my-4 ml-4 rounded-lg flex flex-col relative z-20 shadow-sm">
         <div className="p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-neon-blue">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-neon-blue">
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -92,7 +92,7 @@ export function Layout() {
         </nav>
 
         {/* System Status / Network Indicator */}
-        <div className="p-4 m-4 rounded-xl bg-app-bg border border-app-border shadow-inner">
+        <div className="p-4 m-4 rounded-lg bg-app-bg border border-app-border shadow-inner">
           <div className="flex items-center gap-2 mb-2">
             <ShieldAlert className="w-4 h-4 text-app-text opacity-40" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-app-text opacity-40">Ambiente de Transmissão</span>
@@ -112,7 +112,7 @@ export function Layout() {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <div className="absolute top-[-10%] sm:right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none transition-opacity duration-300" />
         
-        <header className="h-20 flex items-center justify-between px-8 z-10 bg-app-bg border-b border-app-border mx-4 rounded-xl shadow-sm">
+        <header className="h-20 flex items-center justify-between px-8 z-10 bg-app-bg border-b border-app-border mx-4 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold text-app-text tracking-tight">
             {navItems.find((i: any) => i.path === location.pathname)?.name || 'Monitor'}
           </h2>

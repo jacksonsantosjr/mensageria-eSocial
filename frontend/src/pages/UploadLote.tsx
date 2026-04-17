@@ -67,7 +67,7 @@ export default function UploadLote() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center space-x-3 mb-2">
-         <div className="p-3 bg-blue-500/10 rounded-xl shadow-sm border border-blue-500/20 text-blue-500">
+         <div className="p-3 bg-blue-500/10 rounded-lg shadow-sm border border-blue-500/20 text-blue-500">
             <Upload className="w-6 h-6" />
          </div>
          <div>
