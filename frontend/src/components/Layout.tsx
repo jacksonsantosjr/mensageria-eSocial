@@ -72,8 +72,8 @@ export function Layout() {
                 className={({ isActive }) => clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300",
                   isActive 
-                    ? "bg-blue-500/10 text-cyan-300 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    ? "bg-blue-500/10 text-blue-600 dark:text-cyan-300 border border-blue-500/20 shadow-sm" 
+                    : "text-app-text opacity-50 hover:text-app-text hover:bg-app-bg transition-colors"
                 )}
               >
                 <Icon className={clsx("w-5 h-5 transition-transform duration-300", isActive && "scale-110 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]")} />
@@ -84,10 +84,10 @@ export function Layout() {
         </nav>
 
         {/* System Status / Network Indicator */}
-        <div className="p-4 m-4 rounded-lg bg-black/20 border border-white/5 backdrop-blur-sm">
+        <div className="p-4 m-4 rounded-xl bg-app-bg border border-app-border shadow-inner">
           <div className="flex items-center gap-2 mb-2">
-            <ShieldAlert className="w-4 h-4 text-slate-400" />
-            <span className="text-xs font-medium text-slate-300">Ambiente de Transmissão</span>
+            <ShieldAlert className="w-4 h-4 text-app-text opacity-40" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-app-text opacity-40">Ambiente de Transmissão</span>
           </div>
           <div className={clsx(
             "flex items-center justify-center py-1.5 px-3 rounded text-xs font-bold tracking-widest shadow-inner",
