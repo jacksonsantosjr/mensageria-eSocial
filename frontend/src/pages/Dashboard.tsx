@@ -136,7 +136,7 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Modal de Detalhes - Estilo Glassmorphism (Renderizado via Portal para cobrir a Sidebar) */}
+      {/* Modal de Detalhes - Estilo Glassmorphism */}
       {selectedLote && createPortal(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
           <div className="glass-card w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-300">
@@ -225,7 +225,6 @@ export function Dashboard() {
                 </button>
                 <button 
                   onClick={() => {
-                    // Simulação de download XML (no futuro pode ser uma chamada API real)
                     showAlert("Download XML", "O arquivo XML original está sendo preparado.", "info");
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-app-bg border border-app-border text-app-text/60 rounded-md text-sm font-bold hover:bg-app-bg/80 transition-colors"
@@ -242,11 +241,10 @@ export function Dashboard() {
               </button>
             </div>
           </div>
-      </div>
-    ),
-    document.body
-  )}
+        </div>,
+        document.body
+      )}
+
     </div>
   );
 }
-
