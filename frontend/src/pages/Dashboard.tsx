@@ -71,11 +71,11 @@ export function Dashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-black/20 text-xs uppercase tracking-wider text-slate-400 border-b border-white/5">
-                <th className="px-6 py-4 font-medium">Lote / ID</th>
-                <th className="px-6 py-4 font-medium">Data de Envio</th>
-                <th className="px-6 py-4 font-medium">Status eSocial</th>
-                <th className="px-6 py-4 font-medium text-right">Ações</th>
+              <tr className="border-b border-app-border text-[10px] uppercase font-bold tracking-widest text-app-text opacity-40">
+                <th className="px-6 py-4">Lote / ID</th>
+                <th className="px-6 py-4">Data de Envio</th>
+                <th className="px-6 py-4">Status eSocial</th>
+                <th className="px-6 py-4 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border text-sm text-app-text/70">
