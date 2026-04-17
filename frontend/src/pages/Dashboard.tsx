@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardResumo, getLote, downloadLotePDF, downloadEventoPDF } from '../services/api';
 import { StatusBadge } from '../components/StatusBadge';
@@ -135,9 +136,9 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Modal de Detalhes - Estilo Glassmorphism */}
-      {selectedLote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+      {/* Modal de Detalhes - Estilo Glassmorphism (Renderizado via Portal para cobrir a Sidebar) */}
+      {selectedLote && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
           <div className="glass-card w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-300">
             {/* Header do Modal */}
             <div className="p-6 border-b border-app-border flex justify-between items-center bg-app-bg/30">
@@ -241,9 +242,9 @@ export function Dashboard() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       
-    </div>
   );
-}
+}
