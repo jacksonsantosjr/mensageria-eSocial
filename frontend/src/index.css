@@ -88,7 +88,7 @@
     backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-    border-radius: 0.5rem;
+    border-radius: 0.35rem;
     transition: all 0.3s ease;
   }
 
@@ -112,4 +112,22 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-}
+
+  .slide-in-right {
+    animation: slideInRight 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(80px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .blur-in {
+    animation: blurIn 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes blurIn {
+    from { filter: blur(20px); opacity: 0; }
+    to { filter: blur(0); opacity: 1; }
+  }
+}

@@ -66,14 +66,14 @@ export function Dashboard() {
         {cards.map((c: any, i: number) => {
           const Icon = c.icon;
           return (
-            <div key={i} className="bg-app-bg border border-app-border p-6 rounded-lg shadow-sm hover:shadow-md transition-all group">
-              <div className="flex items-center gap-4 mb-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${c.bg} border-app-border border shadow-sm`}>
-                  <Icon className={`w-5 h-5 ${c.color}`} />
+            <div key={i} className="bg-app-bg border border-app-border p-4 rounded-lg shadow-sm hover:shadow-md transition-all group">
+              <div className="flex items-center gap-3 mb-2">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${c.bg} border-app-border border shadow-sm`}>
+                  <Icon className={`w-4 h-4 ${c.color}`} />
                 </div>
-                <h3 className="text-xs font-bold text-app-text opacity-60 tracking-widest uppercase">{c.title}</h3>
+                <h3 className="text-[10px] font-bold text-app-text opacity-60 tracking-widest uppercase">{c.title}</h3>
               </div>
-              <p className="text-3xl font-extrabold text-app-text">{c.value}</p>
+              <p className="text-2xl font-extrabold text-app-text">{c.value}</p>
             </div>
           );
         })}
@@ -153,19 +153,19 @@ export function Dashboard() {
                 onClick={() => setSelectedLote(null)}
                 className="p-2 rounded-full hover:bg-app-bg transition-colors text-app-text/40 hover:text-app-text"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Conteúdo do Modal */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            <div className="flex-1 overflow-auto p-4 z-10 custom-scrollbar">
               
               {/* Alerta de Erro Crítico (se houver) */}
               {(selectedLote.status === 'ERROR' || selectedLote.erro_mensagem) && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-md flex gap-4 items-start">
-                   <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                   <div className="text-sm">
-                      <p className="font-bold text-red-500 mb-1">Erro no Processamento do Lote</p>
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md flex gap-3 items-start mb-4">
+                   <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                   <div className="text-xs">
+                      <p className="font-bold text-red-500 mb-0.5">Erro no Processamento do Lote</p>
                       <p className="text-app-text/70">{selectedLote.erro_mensagem || 'Ocorreu um erro inesperado na transmissão. Verifique a lista de eventos abaixo.'}</p>
                    </div>
                 </div>

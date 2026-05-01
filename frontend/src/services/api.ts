@@ -9,6 +9,19 @@ export const api = axios.create({
   }
 });
 
+// Configuração para chamadas diretas ao Supabase Auth
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const authApi = axios.create({
+  baseURL: `${supabaseUrl}/auth/v1`,
+  headers: {
+    'apikey': supabaseAnonKey,
+    'Authorization': `Bearer ${supabaseAnonKey}`,
+    'Content-Type': 'application/json'
+  }
+});
+
 // Interceptor p/ erros
 api.interceptors.response.use(
   (response) => response,
@@ -18,6 +31,30 @@ api.interceptors.response.use(
     return Promise.reject(detail);
   }
 );
+
+// --- Autenticação (Supabase REST) ---
+export const login = async (email: string, password: string) => {
+    const response = await authApi.post('/token?grant_type=password', {
+        email,
+        password
+    });
+    
+    // Salvar o token e dados do usuário
+    if (response.data.access_token) {
+        localStorage.setItem('esocial_session', JSON.stringify(response.data));
+    }
+    
+    return response.data;
+};
+
+export const logout = () => {
+    localStorage.removeItem('esocial_session');
+};
+
+export const getSession = () => {
+    const session = localStorage.getItem('esocial_session');
+    return session ? JSON.parse(session) : null;
+};
 
 // --- Empresas ---
 export const getEmpresas = async () => {
