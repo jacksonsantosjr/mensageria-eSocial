@@ -32,9 +32,10 @@ api.interceptors.response.use(
   }
 );
 
-// --- Autenticação (Supabase REST) ---
+// --- Autenticação (Proxy via Backend FastAPI) ---
 export const login = async (email: string, password: string) => {
-    const response = await authApi.post('/token?grant_type=password', {
+    // Bate no nosso backend para evitar expor chaves no frontend e problemas de build-time env
+    const response = await api.post('/auth/login', {
         email,
         password
     });
