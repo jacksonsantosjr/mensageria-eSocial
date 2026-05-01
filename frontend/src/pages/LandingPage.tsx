@@ -91,13 +91,13 @@ export default function LandingPage() {
 
       {/* Login Modal (Glassmorphism) */}
       {isLoginModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
-            className="absolute inset-0 bg-slate-950/70"
+            className="absolute inset-0 bg-slate-950/70 modal-backdrop"
             onClick={() => !loading && setIsLoginModalOpen(false)}
           />
           
-          <div className="bg-white rounded-md shadow-2xl p-6 md:p-7 w-full max-w-[320px] border border-slate-100 relative overflow-hidden">
+          <div className="bg-white rounded-md shadow-2xl p-6 md:p-7 w-full max-w-[320px] border border-slate-100 relative overflow-hidden modal-appear">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
             
             <div className="text-center mb-5">
