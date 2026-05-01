@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, LogIn, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { login } from '../services/api';
 import { BACKGROUND_ESOCIAL } from '../assets/images';
 

@@ -3,15 +3,15 @@ import axios from 'axios';
 // A URL base aponta para o backend FastAPI (Hugging Face redireciona via proxy ou porta local)
 export const api = axios.create({
   // @ts-ignore
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: (import.meta as any).env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
 // Configuração para chamadas diretas ao Supabase Auth
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
 
 export const authApi = axios.create({
   baseURL: `${supabaseUrl}/auth/v1`,

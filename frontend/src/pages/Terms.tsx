@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ShieldCheck, ScrollText, Scale } from 'lucide-react';
+import { ChevronLeft, ScrollText, Scale } from 'lucide-react';
 import { BACKGROUND_ESOCIAL } from '../assets/images';
 
 export default function Terms() {

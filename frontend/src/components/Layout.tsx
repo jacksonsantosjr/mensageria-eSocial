@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileUp, Activity, Inbox, ShieldAlert, Sun, Moon, Settings, LogOut, User } from 'lucide-react';
 import { logout } from '../services/api';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +10,6 @@ import { ToastContainer } from './ToastContainer';
 
 export function Layout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
 
   const handleEncerrarSessao = (e?: React.MouseEvent) => {
